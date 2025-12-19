@@ -1,8 +1,15 @@
 node_modules/
 frontend/node_modules/
+Backend/node_modules/
+
+.env
+frontend/.env
+Backend/.env
+
 build/
 frontend/build/
-.env
 dist/
+
 .DS_Store
 *.log
+.husky/
