@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const express = require('express');
 const router = express.Router();
 const { register, login, getCurrentUser } = require('../controllers/authController');
@@ -8,3 +9,15 @@ router.post('/login', login);
 router.get('/me', protect, getCurrentUser);
 
 module.exports = router;
+=======
+const express = require('express');
+const router = express.Router();
+const { register, login, getCurrentUser } = require('../controllers/authController');
+const { protect } = require('../middleware/auth');
+
+router.post('/register', register);
+router.post('/login', login);
+router.get('/me', protect, getCurrentUser);
+
+module.exports = router;
+>>>>>>> dc566378 (`Initial commit of frontend package with dependencies and styles`)
