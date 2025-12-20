@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema(
@@ -30,7 +29,8 @@ const projectSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
-    featured: {
+    // CHANGED: Renamed 'featured' to 'isFeatured' to match your Admin Panel code
+    isFeatured: {
       type: Boolean,
       default: false,
     },
@@ -39,45 +39,3 @@ const projectSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('Project', projectSchema);
-=======
-const mongoose = require('mongoose');
-
-const projectSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: [true, 'Project title is required'],
-      trim: true,
-      maxlength: 200,
-    },
-    description: {
-      type: String,
-      required: [true, 'Description is required'],
-      maxlength: 2000,
-    },
-    techStack: {
-      type: [String],
-      default: [],
-    },
-    githubUrl: {
-      type: String,
-      default: '',
-    },
-    liveUrl: {
-      type: String,
-      default: '',
-    },
-    thumbnail: {
-      type: String,
-      default: '',
-    },
-    featured: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  { timestamps: true }
-);
-
-module.exports = mongoose.model('Project', projectSchema);
->>>>>>> dc566378 (`Initial commit of frontend package with dependencies and styles`)
