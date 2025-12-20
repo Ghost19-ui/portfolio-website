@@ -35,7 +35,7 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
 
-    <!-- Manifest (PWA basics, optional but good) -->
+    <!-- Manifest -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
     <!-- Fonts / Icons -->
@@ -50,19 +50,10 @@
       rel="stylesheet"
     />
 
-    <!-- Simple loading style -->
+    <!-- Minimal base styles; visual design handled by Tailwind -->
     <style>
       body {
         margin: 0;
-        background: radial-gradient(
-          circle at top,
-          #0b1120 0,
-          #020617 55%,
-          #000 100%
-        );
-        color: #e5e7eb;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Inter',
-          sans-serif;
       }
       #root {
         min-height: 100vh;
@@ -73,12 +64,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: radial-gradient(
-          circle at top,
-          #0b1120 0,
-          #020617 55%,
-          #000 100%
-        );
         z-index: 9999;
       }
       #root-loading .spinner {
@@ -94,7 +79,6 @@
         font-size: 0.875rem;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: #9ca3af;
         text-align: center;
       }
       @keyframes spin {
@@ -108,9 +92,7 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
 
-    <!-- React mounts here -->
     <div id="root">
-      <!-- Optional initial loader while React bundles load -->
       <div id="root-loading">
         <div>
           <div class="spinner"></div>
@@ -118,6 +100,5 @@
         </div>
       </div>
     </div>
-    <!-- React scripts will be injected automatically by the build step -->
   </body>
 </html>
