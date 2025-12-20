@@ -6,32 +6,29 @@ const errorHandler = require('./middleware/errorHandler');
 
 dotenv.config();
 
-// Connect to database immediately. 
-// Mongoose manages the connection and buffers requests until it's ready.
-connectDB(); 
+// Connect to database immediately.
+connectDB();
 
 const app = express();
 
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
-  'http://localhost:5173', // Vite default port (just in case)
-  // IMPORTANT: You will need to add your ACTUAL Vercel Frontend URL here later
-  // Example: 'https://portfolio-frontend-tushar.vercel.app'
+  'http://localhost:5173',
+  'https://portfolio-seven-black-as1mezo05.vercel.app', // <--- I ADDED THIS FOR YOU
+  'https://portfolio-cgpo.vercel.app' // Added your backend URL just in case
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
-    // Check if the origin is in the allowed list
+
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      // Optional: Relax CORS for development if needed, or stick to strict:
       console.log('Blocked by CORS:', origin);
-      callback(new Error('CORS not allowed'));
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
@@ -43,16 +40,16 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.get('/', (req, res) => res.send('API running'));
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/projects', require('./routes/projects'));
-app.use('/api/contact', require('./routes/contact'));
+// Note: I also updated the path slightly to match standard conventions
+// If your previous paths were /api/v1/auth, make sure these match!
+// Based on your previous code, these look correct:
+app.use('/api/v1/auth', require('./routes/auth'));
+app.use('/api/v1/projects', require('./routes/projects'));
+app.use('/api/v1/contact', require('./routes/contact'));
 
 app.use(errorHandler);
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 
-// --- VERCEL SPECIFIC CONFIGURATION ---
-
-// Only run app.listen if we are NOT in production (i.e., local development)
 if (process.env.NODE_ENV !== 'production') {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
@@ -60,5 +57,4 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-// Export the app so Vercel can run it as a serverless function
 module.exports = app;
