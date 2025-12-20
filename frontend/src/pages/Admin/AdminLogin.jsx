@@ -35,56 +35,61 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-slate-900 to-blue-900">
-      <div className="bg-slate-800 rounded-lg p-8 w-full max-w-md shadow-2xl">
-        <h1 className="text-3xl font-bold text-white text-center mb-8">
-          Admin Login
-        </h1>
+    <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center bg-gradient-to-b from-slate-950 to-slate-900">
+      <div className="w-full max-w-md px-6">
+        <div className="bg-slate-900/80 border border-slate-700 rounded-xl shadow-2xl px-6 py-8">
+          <h1 className="text-2xl font-semibold text-center mb-6">
+            Admin Login
+          </h1>
 
-        {error && (
-          <div className="bg-red-600 text-white p-3 rounded mb-4 text-center">
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="bg-red-600/90 text-white text-sm px-4 py-3 rounded mb-4 text-center">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="text-white font-semibold block mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 rounded bg-slate-700 text-white border border-blue-600 focus:outline-none placeholder:text-slate-400"
-              placeholder="admin@example.com"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-200">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2.5 text-sm text-slate-100
+                           placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="admin@example.com"
+              />
+            </div>
 
-          <div>
-            <label className="text-white font-semibold block mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 rounded bg-slate-700 text-white border border-blue-600 focus:outline-none placeholder:text-slate-400"
-            />
-          </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-200">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2.5 text-sm text-slate-100
+                           placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition disabled:opacity-50"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-500
+                         text-sm font-semibold text-white py-2.5 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Logging in…' : 'Login'}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
