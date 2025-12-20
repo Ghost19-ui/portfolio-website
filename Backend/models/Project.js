@@ -1,41 +1,39 @@
 const mongoose = require('mongoose');
 
-const projectSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: [true, 'Project title is required'],
-      trim: true,
-      maxlength: 200,
-    },
-    description: {
-      type: String,
-      required: [true, 'Description is required'],
-      maxlength: 2000,
-    },
-    techStack: {
-      type: [String],
-      default: [],
-    },
-    githubUrl: {
-      type: String,
-      default: '',
-    },
-    liveUrl: {
-      type: String,
-      default: '',
-    },
-    thumbnail: {
-      type: String,
-      default: '',
-    },
-    // CHANGED: Renamed 'featured' to 'isFeatured' to match your Admin Panel code
-    isFeatured: {
-      type: Boolean,
-      default: false,
-    },
+const projectSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, 'Please add a title'],
+    trim: true
   },
-  { timestamps: true }
-);
+  description: {
+    type: String,
+    required: [true, 'Please add a description']
+  },
+  image: {
+    type: String,
+    required: [true, 'Please add an image URL']
+  },
+  technologies: {
+    type: [String], // Array of strings like ['React', 'Node.js']
+    required: true
+  },
+  githubLink: {
+    type: String,
+    required: [true, 'Please add a GitHub link']
+  },
+  liveLink: {
+    type: String,
+    // Live link is optional, so we don't require it
+  },
+  featured: {
+    type: Boolean,
+    default: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
 
 module.exports = mongoose.model('Project', projectSchema);
