@@ -2,15 +2,21 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  // We hardcode the URL to ensure it connects to your live Vercel Backend
+  // We also added '/v1' because that is what your server expects
+  baseURL: 'https://portfolio-cgpo.vercel.app/api/v1',
   withCredentials: true,
 });
 
-// Optional: request interceptor (e.g., auth token)
-// api.interceptors.request.use((config) => {
-//   // const token = localStorage.getItem('token');
-//   // if (token) config.headers.Authorization = `Bearer ${token}`;
-//   return config;
-// });
+// Request interceptor to add the Token to every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
 
 export default api;
