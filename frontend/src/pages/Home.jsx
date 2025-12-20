@@ -1,9 +1,25 @@
-import React from "react";
-// We removed StickyHeader since App.jsx handles the main nav now
+import React, { useEffect, useState } from "react";
 import GalaxyBackground from "../components/GalaxyBackground";
 import ParticlesBackground from "../components/ParticlesBackground";
+import API from "../api/axiosConfig"; // Import API to fetch data
 
 const Home = () => {
+  const [featuredProjects, setFeaturedProjects] = useState([]);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const response = await API.get('/projects');
+        // Filter for featured projects and take the top 3
+        const featured = response.data.filter(p => p.isFeatured).slice(0, 3);
+        setFeaturedProjects(featured);
+      } catch (error) {
+        console.error("Failed to load featured projects", error);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
   return (
     <main className="relative min-h-screen text-slate-100 overflow-hidden">
       
@@ -15,9 +31,6 @@ const Home = () => {
       {/* Content wrapper */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 lg:py-12 flex flex-col justify-center min-h-[80vh]">
         
-        {/* --- DUPLICATE HEADER REMOVED FROM HERE --- */}
-
-        {/* Hero + side card grid */}
         <section
           id="home"
           className="grid gap-6 lg:grid-cols-[minmax(0,1.6fr),minmax(0,1.1fr)] items-center"
@@ -45,6 +58,17 @@ const Home = () => {
                 >
                   View my work
                 </a>
+                
+                {/* --- NEW RESUME BUTTON --- */}
+                {/* Make sure to place a 'resume.pdf' file inside your 'frontend/public' folder! */}
+                <a
+                  href="/resume.pdf" 
+                  download="Tushar_Saini_Resume.pdf"
+                  className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-4 py-2 font-semibold text-slate-900 shadow-lg hover:bg-white transition-transform duration-150 hover:scale-[1.03]"
+                >
+                  <span>📄</span> Resume
+                </a>
+
                 <a
                   href="/contact"
                   className="inline-flex items-center rounded-full border border-cyan-400/70 px-4 py-2 font-medium text-cyan-300 transition-all duration-150 hover:bg-cyan-500/10 hover:scale-[1.02] hover:shadow-[0_0_18px_rgba(56,189,248,0.7)]"
@@ -66,39 +90,33 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Experience / quick stats card */}
+          {/* DYNAMIC RECENT FOCUS SECTION */}
           <div id="experience" className="relative mt-2 lg:mt-0 animate-fade-in delay-100">
             <div className="absolute -inset-[1px] rounded-3xl bg-gradient-to-br from-sky-500/40 via-violet-500/40 to-transparent opacity-60 blur-xl" />
             <div className="relative h-full rounded-3xl border border-slate-700/70 bg-slate-900/80 px-5 py-5 shadow-2xl backdrop-blur-2xl lg:px-6 lg:py-6">
               <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-slate-300">
                 Recent focus
               </h2>
-              <ul className="space-y-4 text-xs md:text-sm text-slate-200">
-                <li>
-                  <p className="font-semibold text-sky-300">
-                    WADE – Web AI Defense Engine
-                  </p>
-                  <p className="text-slate-300">
-                    AI‑assisted intrusion detection for modern web stacks.
-                  </p>
-                </li>
-                <li>
-                  <p className="font-semibold text-sky-300">
-                    AAPE – BadUSB red/blue toolkit
-                  </p>
-                  <p className="text-slate-300">
-                    Offensive payloads plus training modules for defenders.
-                  </p>
-                </li>
-                <li>
-                  <p className="font-semibold text-sky-300">
-                    Portfolio &amp; admin dashboard
-                  </p>
-                  <p className="text-slate-300">
-                    Full MERN stack with protected admin panel.
-                  </p>
-                </li>
-              </ul>
+              
+              {featuredProjects.length > 0 ? (
+                <ul className="space-y-4 text-xs md:text-sm text-slate-200">
+                  {featuredProjects.map((project) => (
+                    <li key={project._id} className="group cursor-default">
+                      <p className="font-semibold text-sky-300 group-hover:text-cyan-200 transition-colors">
+                        {project.title}
+                      </p>
+                      <p className="text-slate-300 line-clamp-2">
+                        {project.description}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-slate-400 text-sm italic py-4">
+                  {/* Fallback if no projects are featured yet */}
+                  <p>Check out my <a href="/projects" className="text-cyan-400 underline">Projects</a> page to see what I'm working on!</p>
+                </div>
+              )}
             </div>
           </div>
         </section>
