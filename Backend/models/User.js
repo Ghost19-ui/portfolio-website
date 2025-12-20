@@ -19,8 +19,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please add a password'],
-    minlength: 6,
-    select: false // Hides password from queries by default for security
+    minlength: 6
+    // I REMOVED 'select: false' so your controller can read the password
   },
   role: {
     type: String,
@@ -42,13 +42,12 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Match user entered password to hashed password in database
-// I RENAMED THIS FROM 'matchPassword' TO 'comparePassword' TO FIX YOUR ERROR
+// Compare user password
 userSchema.methods.comparePassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Sign JWT and return (This was missing!)
+// Sign JWT and return
 userSchema.methods.getSignedJwtToken = function() {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || '30d'
