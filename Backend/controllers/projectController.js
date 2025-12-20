@@ -1,18 +1,22 @@
 const Project = require('../models/Project');
 
+// @desc    Get all projects
 exports.getAllProjects = async (req, res, next) => {
   try {
     const projects = await Project.find().sort({ createdAt: -1 });
-    res.json({ 
-      success: true,
-      count: projects.length,
-      data: projects 
-    });
+    
+    // --- FIX IS HERE ---
+    // We send the array DIRECTLY. No 'success' wrapper, no 'data' wrapper.
+    // This fixes the "map is not a function" error.
+    res.status(200).json(projects); 
+    // -------------------
+
   } catch (error) {
     next(error);
   }
 };
 
+// @desc    Get single project
 exports.getProjectById = async (req, res, next) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -21,28 +25,23 @@ exports.getProjectById = async (req, res, next) => {
       err.status = 404;
       return next(err);
     }
-    res.json({ 
-      success: true,
-      data: project 
-    });
+    res.status(200).json(project);
   } catch (error) {
     next(error);
   }
 };
 
+// @desc    Create new project
 exports.createProject = async (req, res, next) => {
   try {
     const project = await Project.create(req.body);
-    res.status(201).json({ 
-      success: true,
-      message: 'Project created successfully',
-      data: project 
-    });
+    res.status(201).json(project);
   } catch (error) {
     next(error);
   }
 };
 
+// @desc    Update project
 exports.updateProject = async (req, res, next) => {
   try {
     const project = await Project.findByIdAndUpdate(
@@ -58,16 +57,13 @@ exports.updateProject = async (req, res, next) => {
       err.status = 404;
       return next(err);
     }
-    res.json({ 
-      success: true,
-      message: 'Project updated successfully',
-      data: project 
-    });
+    res.status(200).json(project);
   } catch (error) {
     next(error);
   }
 };
 
+// @desc    Delete project
 exports.deleteProject = async (req, res, next) => {
   try {
     const project = await Project.findByIdAndDelete(req.params.id);
@@ -76,11 +72,7 @@ exports.deleteProject = async (req, res, next) => {
       err.status = 404;
       return next(err);
     }
-    res.json({ 
-      success: true,
-      message: 'Project deleted successfully',
-      data: project 
-    });
+    res.status(200).json({ message: 'Project deleted successfully' });
   } catch (error) {
     next(error);
   }
