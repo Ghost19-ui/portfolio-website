@@ -1,5 +1,13 @@
-// inside frontend/src/App.jsx
+import React, { useContext, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Home from './pages/Home';
+import Projects from './pages/Projects';
+import Contact from './pages/Contact';
+import AdminLogin from './pages/Admin/AdminLogin';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import { AuthContext, AuthProvider } from './context/AuthContext';
 
+// --- New Layout Component with Glassmorphism & Animations ---
 function Layout({ children }) {
   const { user } = useContext(AuthContext);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -55,6 +63,18 @@ function Layout({ children }) {
         </div>
       </header>
 
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="fixed top-16 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 md:hidden animate-slide-up">
+           <div className="px-4 py-6 space-y-4">
+              <Link to="/" className="block text-lg font-medium text-slate-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
+              <Link to="/projects" className="block text-lg font-medium text-slate-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>Projects</Link>
+              <Link to="/contact" className="block text-lg font-medium text-slate-300 hover:text-white" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
+              <Link to="/admin" className="block text-lg font-medium text-blue-400" onClick={() => setIsMobileMenuOpen(false)}>Admin</Link>
+           </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <main className="flex-grow pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full relative z-10 animate-fade-in">
         {children}
@@ -67,5 +87,25 @@ function Layout({ children }) {
         </div>
       </footer>
     </div>
+  );
+}
+
+// --- The Missing "Default Export" ---
+// This was missing, causing the build error!
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </AuthProvider>
   );
 }
