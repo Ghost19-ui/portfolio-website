@@ -11,14 +11,18 @@ export default function App() {
   const { user } = useContext(AuthContext);
 
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/projects" element={<Projects />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route
-        path="/admin"
-        element={user ? <AdminDashboard /> : <AdminLogin />}
-      />
-    </Routes>
+    <>
+      {/* Navbar / layout here if needed */}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/contact" element={<Contact />} />
+
+        <Route
+          path="/admin"
+          element={user ? <AdminDashboard /> : <AdminLogin />}
+        />
+      </Routes>
+    </>
   );
 }

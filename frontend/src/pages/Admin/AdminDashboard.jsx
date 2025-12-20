@@ -4,16 +4,26 @@ import ManageProjects from './ManageProjects';
 import ViewMessages from './ViewMessages';
 
 export default function AdminDashboard() {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('projects');
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="bg-slate-800 rounded-lg p-8 text-white">
-        <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-        <p className="text-gray-300 mb-8">
-          Welcome, {user?.name}! Manage your portfolio content.
-        </p>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-4xl font-bold mb-1">Admin Dashboard</h1>
+            <p className="text-gray-300">
+              Welcome, {user?.name || 'Admin'}! Manage your portfolio content.
+            </p>
+          </div>
+          <button
+            onClick={logout}
+            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded font-bold transition"
+          >
+            Logout
+          </button>
+        </div>
 
         <div className="flex gap-4 mb-8 border-b border-slate-700">
           <button
@@ -38,8 +48,10 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {activeTab === 'projects' && <ManageProjects />}
-        {activeTab === 'messages' && <ViewMessages />}
+        <div>
+          {activeTab === 'projects' && <ManageProjects />}
+          {activeTab === 'messages' && <ViewMessages />}
+        </div>
       </div>
     </div>
   );
