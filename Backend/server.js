@@ -11,20 +11,13 @@ connectDB();
 
 const app = express();
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:5173',
-  'https://portfolio-seven-black-as1mezo05.vercel.app', // <--- I ADDED THIS FOR YOU
-  'https://portfolio-cgpo.vercel.app' // Added your backend URL just in case
-];
-
+// --- THE FIX IS HERE ---
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
+    // 1. Allow requests with no origin (like mobile apps or Postman)
+    // 2. Allow localhost (for local testing)
+    // 3. Allow ANY Vercel domain (fixes the changing URL issue)
+    if (!origin || origin.includes('localhost') || origin.includes('.vercel.app')) {
       callback(null, true);
     } else {
       console.log('Blocked by CORS:', origin);
@@ -33,6 +26,7 @@ app.use(cors({
   },
   credentials: true,
 }));
+// -----------------------
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
@@ -40,9 +34,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.get('/', (req, res) => res.send('API running'));
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-// Note: I also updated the path slightly to match standard conventions
-// If your previous paths were /api/v1/auth, make sure these match!
-// Based on your previous code, these look correct:
+// Routes
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/projects', require('./routes/projects'));
 app.use('/api/v1/contact', require('./routes/contact'));
