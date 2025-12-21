@@ -5,7 +5,8 @@ const skillSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ['Programming Languages', 'Web Development', 'Cybersecurity', 'Tools', 'Other'],
+      unique: true, // Prevents duplicate categories
+      trim: true
     },
     skills: [
       {
