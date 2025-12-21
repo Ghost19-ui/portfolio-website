@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NeuralBackground from "../components/NeuralBackground";
 import API from "../api/axiosConfig"; 
-import { FileText, Terminal, ExternalLink } from 'lucide-react';
+import { FileText, Terminal } from 'lucide-react';
 
 const Home = () => {
   const [skillGroups, setSkillGroups] = useState([]);
@@ -40,13 +40,13 @@ const Home = () => {
                   I simulate advanced cyber attacks to secure critical infrastructure.
                 </p>
 
-                {/* --- BUTTONS SECTION (FIXED) --- */}
+                {/* --- BUTTONS SECTION --- */}
                 <div className="flex flex-wrap gap-4">
                   <a href="/projects" className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-black px-6 py-3 font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)]">
                     <Terminal size={18} /> View Operations
                   </a>
                   
-                  {/* RESUME BUTTON - NOW HIGH VISIBILITY */}
+                  {/* RESUME BUTTON */}
                   <a 
                     href="/resume.pdf" 
                     download="Tushar_Saini_Resume.pdf" 
@@ -69,26 +69,32 @@ const Home = () => {
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {skillGroups.map((group) => (
-                <div key={group._id}>
-                  <h3 className="text-white font-bold mb-3 border-b border-gray-800 pb-1 flex items-center gap-2 text-sm uppercase">
-                    <span className="text-red-600">></span> {group.category}
-                  </h3>
-                  <div className="space-y-3">
-                    {group.skills.map((skill) => (
-                      <div key={skill._id}>
-                        <div className="flex justify-between text-xs text-gray-400 mb-1 font-mono">
-                          <span>{skill.name}</span>
-                          <span>{skill.level}%</span>
+              {skillGroups.length > 0 ? (
+                skillGroups.map((group) => (
+                  <div key={group._id}>
+                    <h3 className="text-white font-bold mb-3 border-b border-gray-800 pb-1 flex items-center gap-2 text-sm uppercase">
+                      <span className="text-red-600">></span> {group.category}
+                    </h3>
+                    <div className="space-y-3">
+                      {group.skills.map((skill) => (
+                        <div key={skill._id}>
+                          <div className="flex justify-between text-xs text-gray-400 mb-1 font-mono">
+                            <span>{skill.name}</span>
+                            <span>{skill.level}%</span>
+                          </div>
+                          <div className="h-1 w-full bg-gray-900 overflow-hidden">
+                            <div className="h-full bg-red-600 shadow-[0_0_10px_red]" style={{ width: `${skill.level}%` }}></div>
+                          </div>
                         </div>
-                        <div className="h-1 w-full bg-gray-900 overflow-hidden">
-                          <div className="h-full bg-red-600 shadow-[0_0_10px_red]" style={{ width: `${skill.level}%` }}></div>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-gray-500 text-sm font-mono col-span-full text-center py-10">
+                  Loading capabilities database...
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </section>

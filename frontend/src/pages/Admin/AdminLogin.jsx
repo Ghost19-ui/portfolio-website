@@ -2,11 +2,12 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import API from '../../api/axiosConfig';
-import { Lock, User, ArrowRight, AlertTriangle, ShieldAlert } from 'lucide-react';
-import NeuralBackground from '../../components/NeuralBackground'; // <--- CHANGED FROM CYBERGRID
+import { Lock, User, ArrowRight, AlertTriangle, ShieldAlert, Eye, EyeOff } from 'lucide-react';
+import NeuralBackground from '../../components/NeuralBackground';
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, user } = useContext(AuthContext);
@@ -28,11 +29,14 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-black font-mono relative overflow-hidden">
-      {/* 1. USE NEURAL BACKGROUND INSTEAD OF GRID */}
-      <NeuralBackground />
+      {/* BACKGROUND FORCED TO BACK */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <NeuralBackground />
+      </div>
       
+      {/* CONTENT FORCED TO FRONT */}
       <div className="relative z-10 w-full max-w-md p-6">
-        <div className="bg-black/80 backdrop-blur-xl border border-red-600/50 p-8 shadow-[0_0_60px_rgba(220,38,38,0.15)] rounded-lg">
+        <div className="bg-black/90 backdrop-blur-xl border border-red-600/50 p-8 shadow-[0_0_60px_rgba(220,38,38,0.15)] rounded-2xl">
           
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-red-950/30 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-600 animate-pulse shadow-[0_0_20px_rgba(220,38,38,0.4)]">
@@ -69,13 +73,21 @@ export default function AdminLogin() {
               <div className="relative group">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 transition-colors" size={18} />
                 <input 
-                  type="password" 
+                  type={showPassword ? "text" : "password"} 
                   name="password" 
                   value={formData.password} 
                   onChange={handleChange} 
-                  className="w-full bg-black/50 border border-gray-800 py-3 pl-10 text-white focus:border-red-600 outline-none transition-all focus:shadow-[0_0_15px_rgba(220,38,38,0.3)] rounded" 
+                  className="w-full bg-black/50 border border-gray-800 py-3 pl-10 pr-10 text-white focus:border-red-600 outline-none transition-all focus:shadow-[0_0_15px_rgba(220,38,38,0.3)] rounded" 
                   placeholder="••••••••" 
                 />
+                {/* EYE BUTTON FIX: Added z-20 and proper positioning */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors z-20 cursor-pointer"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
