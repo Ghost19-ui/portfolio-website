@@ -1,56 +1,46 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import api from '../api/axiosConfig';
+import React, { createContext, useState, useEffect } from 'react';
+import API from '../api/axiosConfig';
 
-// --- FIX IS HERE: Added 'export' ---
 export const AuthContext = createContext();
-// -----------------------------------
-
-export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // SECURITY UPDATE: Check sessionStorage instead of localStorage
-    const token = sessionStorage.getItem('token');
-    
-    if (token) {
-      // If token exists, try to fetch user data
-      setUser({ token }); 
-    }
-    setLoading(false);
+    // Check for existing session on load
+    const checkUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          // Verify token with backend
+          const { data } = await API.get('/auth/me'); 
+          setUser(data.user || data); // Handle both {user: {...}} and {...} formats
+        } catch (error) {
+          console.error("Session expired:", error);
+          localStorage.removeItem('token');
+          setUser(null);
+        }
+      }
+      setLoading(false);
+    };
+    checkUser();
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const response = await api.post('/auth/login', { email, password });
-      
-      const { token, user } = response.data; 
-      
-      // SECURITY UPDATE: Save to sessionStorage (dies when tab closes)
-      sessionStorage.setItem('token', token);
-      
-      setUser(user || { token }); 
-      return { success: true };
-    } catch (error) {
-      console.error("Login error", error);
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Login failed' 
-      };
-    }
+  // --- THE CRITICAL FIX ---
+  // Ensure this function accepts TWO parameters
+  const login = (token, userData) => {
+    localStorage.setItem('token', token);
+    setUser(userData);
   };
 
   const logout = () => {
-    // SECURITY UPDATE: Clear sessionStorage
-    sessionStorage.removeItem('token');
+    localStorage.removeItem('token');
     setUser(null);
-    window.location.href = '/';
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading, setUser }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
