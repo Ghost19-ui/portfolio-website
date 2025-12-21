@@ -40,17 +40,16 @@ const Home = () => {
                   I simulate advanced cyber attacks to secure critical infrastructure.
                 </p>
 
-                {/* --- BUTTONS SECTION --- */}
+                {/* BUTTONS */}
                 <div className="flex flex-wrap gap-4">
                   <a href="/projects" className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-black px-6 py-3 font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)]">
                     <Terminal size={18} /> View Operations
                   </a>
                   
-                  {/* RESUME BUTTON */}
                   <a 
                     href="/resume.pdf" 
                     download="Tushar_Saini_Resume.pdf" 
-                    className="flex items-center gap-2 border border-red-600 text-red-500 hover:bg-red-600 hover:text-black px-6 py-3 font-bold uppercase tracking-widest transition-all"
+                    className="flex items-center gap-2 border border-red-600 text-red-500 hover:bg-red-600 hover:text-black px-6 py-3 font-bold uppercase tracking-widest transition-all cursor-pointer z-50"
                   >
                     <FileText size={18} /> Download Resume
                   </a>
