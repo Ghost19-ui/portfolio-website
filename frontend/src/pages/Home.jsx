@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NeuralBackground from "../components/NeuralBackground";
 import API from "../api/axiosConfig"; 
+import { FileText, Terminal, ExternalLink } from 'lucide-react';
 
 const Home = () => {
   const [skillGroups, setSkillGroups] = useState([]);
@@ -12,28 +13,49 @@ const Home = () => {
   }, []);
 
   return (
-    <main className="relative min-h-screen text-slate-100 font-mono">
+    <main className="relative min-h-screen text-slate-100 font-mono selection:bg-red-500/30">
       <NeuralBackground />
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 lg:py-12 flex flex-col justify-center min-h-[80vh]">
         
-        {/* HERO */}
-        <section className="grid gap-6 lg:grid-cols-2 items-center mb-16">
+        {/* HERO SECTION */}
+        <section className="grid gap-6 lg:grid-cols-2 items-center mb-20">
            <div className="relative animate-slide-up">
-              <div className="border-l-4 border-red-600 bg-black/70 backdrop-blur-sm p-8 shadow-[0_0_30px_rgba(220,38,38,0.15)]">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-950/30 border border-red-600/30 text-red-500 text-xs font-bold uppercase tracking-widest mb-6">
-                  <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                  Red Team Active
+              <div className="border-l-4 border-red-600 bg-black/80 backdrop-blur-md p-8 shadow-[0_0_50px_rgba(220,38,38,0.2)]">
+                
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-950/40 border border-red-600/50 text-red-500 text-xs font-bold uppercase tracking-widest mb-6">
+                  <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse shadow-[0_0_10px_red]"></span>
+                  System: Red Team Active
                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-white">Tushar Saini</h1>
-                <h2 className="text-xl text-red-500 mb-6 font-mono">&gt; Offensive Security Engineer</h2>
-                <p className="text-sm md:text-base leading-relaxed text-gray-400 mb-8 max-w-xl font-mono">
-                  Specializing in <span className="text-red-400">Vulnerability Assessment</span>, <span className="text-red-400">Penetration Testing</span>, and Network Intrusion.
+
+                <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tighter text-white">
+                  Tushar Saini
+                </h1>
+                <h2 className="text-xl text-red-500 mb-6 font-mono flex items-center gap-2">
+                  <Terminal size={20} /> Offensive Security Engineer
+                </h2>
+                
+                <p className="text-sm md:text-base leading-relaxed text-gray-400 mb-8 max-w-xl font-sans border-l-2 border-red-900/30 pl-4">
+                  Specializing in <strong className="text-red-400">Vulnerability Assessment</strong>, <strong className="text-red-400">Penetration Testing</strong>, and <strong className="text-red-400">Network Intrusion</strong>.
+                  I simulate advanced cyber attacks to secure critical infrastructure.
                 </p>
-                <div className="flex flex-wrap gap-4 text-sm font-bold">
-                  <a href="/projects" className="bg-red-600 hover:bg-red-700 text-black px-6 py-3 transition-all uppercase tracking-wider">View Operations</a>
-                  <a href="/blog" className="border border-red-600 text-red-500 hover:bg-red-600 hover:text-black px-6 py-3 transition-all uppercase tracking-wider">Read Intel</a>
+
+                {/* --- BUTTONS SECTION (FIXED) --- */}
+                <div className="flex flex-wrap gap-4">
+                  <a href="/projects" className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-black px-6 py-3 font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)]">
+                    <Terminal size={18} /> View Operations
+                  </a>
+                  
+                  {/* RESUME BUTTON - NOW HIGH VISIBILITY */}
+                  <a 
+                    href="/resume.pdf" 
+                    download="Tushar_Saini_Resume.pdf" 
+                    className="flex items-center gap-2 border border-red-600 text-red-500 hover:bg-red-600 hover:text-black px-6 py-3 font-bold uppercase tracking-widest transition-all"
+                  >
+                    <FileText size={18} /> Download Resume
+                  </a>
                 </div>
+
               </div>
            </div>
         </section>
