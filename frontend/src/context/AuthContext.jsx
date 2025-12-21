@@ -1,7 +1,9 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import api from '../api/axiosConfig';
 
-const AuthContext = createContext();
+// --- FIX IS HERE: Added 'export' ---
+export const AuthContext = createContext();
+// -----------------------------------
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -15,7 +17,6 @@ export const AuthProvider = ({ children }) => {
     
     if (token) {
       // If token exists, try to fetch user data
-      // (Optional: You can add an API call here to verify token validity)
       setUser({ token }); 
     }
     setLoading(false);
@@ -25,12 +26,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/login', { email, password });
       
-      const { token, user } = response.data; // Adjust based on your actual API response structure
+      const { token, user } = response.data; 
       
       // SECURITY UPDATE: Save to sessionStorage (dies when tab closes)
       sessionStorage.setItem('token', token);
       
-      setUser(user || { token }); // specific user data if available
+      setUser(user || { token }); 
       return { success: true };
     } catch (error) {
       console.error("Login error", error);
@@ -45,7 +46,6 @@ export const AuthProvider = ({ children }) => {
     // SECURITY UPDATE: Clear sessionStorage
     sessionStorage.removeItem('token');
     setUser(null);
-    // Optional: force reload to clear any memory states
     window.location.href = '/';
   };
 

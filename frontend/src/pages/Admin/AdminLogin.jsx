@@ -2,43 +2,34 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import API from '../../api/axiosConfig';
+import { motion } from 'framer-motion'; // <--- The Magic Animation Library
+import { Lock, Mail, Eye, EyeOff, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false); // New state for eye toggle
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, user } = useContext(AuthContext); // Get 'user' to check if already logged in
+  const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // 1. AUTO-REDIRECT: If you are already logged in, go straight to dashboard
   useEffect(() => {
-    if (user) {
-      navigate('/admin/dashboard'); // Make sure this path matches your router
-    }
+    if (user) navigate('/admin/dashboard');
   }, [user, navigate]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       const response = await API.post('/auth/login', formData);
-      
-      // Pass token and user data to your Auth Context
       login(response.data.token, response.data.user);
-      
-      // Redirect immediately after successful login
-      navigate('/admin/dashboard'); 
+      navigate('/admin/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed');
     } finally {
@@ -47,77 +38,137 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] flex items-center justify-center bg-gradient-to-b from-slate-950 to-slate-900">
-      <div className="w-full max-w-md px-6">
-        <div className="bg-slate-900/80 border border-slate-700 rounded-xl shadow-2xl px-6 py-8">
-          <h1 className="text-2xl font-semibold text-center mb-6">
-            Admin Login
-          </h1>
+    <div className="min-h-screen w-full flex items-center justify-center bg-slate-950 relative overflow-hidden font-sans">
+      
+      {/* --- LEVEL 3 ANIMATION: The "Peaceful Aurora" Background --- */}
+      {/* Blob 1: Purple (Top Left) */}
+      <motion.div 
+        animate={{ x: [0, 50, 0], y: [0, -50, 0], scale: [1, 1.2, 1] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-900/30 rounded-full blur-[120px]"
+      />
+      {/* Blob 2: Cyan (Bottom Right) */}
+      <motion.div 
+        animate={{ x: [0, -50, 0], y: [0, 50, 0], scale: [1, 1.2, 1] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-cyan-900/20 rounded-full blur-[120px]"
+      />
 
-          {error && (
-            <div className="bg-red-600/90 text-white text-sm px-4 py-3 rounded mb-4 text-center">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-200">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="admin@example.com"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-200">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  // 2. TOGGLE TYPE: Switch between 'text' and 'password'
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
-                />
-                
-                {/* 3. EYE BUTTON: Toggles the state */}
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
-                >
-                  {showPassword ? (
-                    // Eye Off Icon
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7c.68 0 1.37-.09 2.03-.27"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
-                  ) : (
-                    // Eye On Icon
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-semibold text-white py-2.5 transition disabled:opacity-60 disabled:cursor-not-allowed"
+      {/* --- THE GLASS CARD --- */}
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, type: "spring" }}
+        className="w-full max-w-md px-8 relative z-10"
+      >
+        <div className="bg-slate-900/40 backdrop-blur-2xl border border-slate-700/50 rounded-3xl shadow-2xl overflow-hidden">
+          
+          {/* Header Section */}
+          <div className="p-8 pb-0 text-center">
+            <motion.div 
+              initial={{ scale: 0 }} 
+              animate={{ scale: 1 }} 
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="w-16 h-16 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-6"
             >
-              {loading ? 'Logging in…' : 'Login'}
-            </button>
-          </form>
+              <ShieldCheck className="text-white w-8 h-8" />
+            </motion.div>
+            <h1 className="text-3xl font-bold text-white tracking-tight">Welcome Back</h1>
+            <p className="text-slate-400 mt-2 text-sm">Secure access to Tushar's Portfolio</p>
+          </div>
+
+          {/* Form Section */}
+          <div className="p-8">
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm p-3 rounded-xl mb-6 text-center"
+              >
+                {error}
+              </motion.div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              
+              {/* Email Field */}
+              <motion.div 
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="space-y-1"
+              >
+                <label className="text-xs font-semibold text-slate-300 ml-1">EMAIL</label>
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors w-5 h-5" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-slate-950/50 border border-slate-700 rounded-xl py-3.5 pl-12 pr-4 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/10 transition-all"
+                    placeholder="admin@example.com"
+                  />
+                </div>
+              </motion.div>
+
+              {/* Password Field */}
+              <motion.div 
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="space-y-1"
+              >
+                <label className="text-xs font-semibold text-slate-300 ml-1">PASSWORD</label>
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors w-5 h-5" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-slate-950/50 border border-slate-700 rounded-xl py-3.5 pl-12 pr-12 text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/10 transition-all"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </motion.div>
+
+              {/* Submit Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 transition-all flex items-center justify-center gap-2 mt-4"
+              >
+                {loading ? (
+                  'Accessing Secure Area...'
+                ) : (
+                  <>
+                    <span>Login to Dashboard</span>
+                    <ArrowRight size={18} />
+                  </>
+                )}
+              </motion.button>
+
+            </form>
+          </div>
+          
+          {/* Footer Decoration */}
+          <div className="bg-slate-950/30 p-4 text-center border-t border-slate-700/50">
+             <p className="text-xs text-slate-500">Authorized Personnel Only • Secure VAPT System</p>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
