@@ -10,21 +10,31 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Use the login function from your Context (Best Practice)
   const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  useEffect(() => { if (user) navigate('/admin/dashboard'); }, [user, navigate]);
+  useEffect(() => { 
+    if (user) navigate('/admin/dashboard'); 
+  }, [user, navigate]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); setLoading(true);
+    setError(''); 
+    setLoading(true);
     try {
       const response = await API.post('/auth/login', formData);
+      // Use the context login function to handle state update
       login(response.data.token, response.data.user);
       navigate('/admin/dashboard');
-    } catch (err) { setError(err.response?.data?.error || 'Access Denied'); } finally { setLoading(false); }
+    } catch (err) { 
+      setError(err.response?.data?.error || 'Access Denied'); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   return (

@@ -41,7 +41,7 @@ export default function AdminDashboard() {
 
   useEffect(() => { fetchData(); }, [activeTab]);
 
-  // Create Handlers
+  // Create Handler
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
@@ -59,6 +59,7 @@ export default function AdminDashboard() {
     } catch (error) { alert("Operation failed. Check console."); }
   };
 
+  // Delete Handler
   const handleDelete = async (id, type, subId = null) => {
     if (!window.confirm("Confirm deletion?")) return;
     try {
@@ -75,12 +76,11 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-black text-white font-mono relative">
-      {/* Background forced to back */}
-      <div className="fixed inset-0 z-0">
-        <NeuralBackground />
-      </div>
       
-      {/* Content forced to front */}
+      {/* 1. Background Component (Handles its own Z-Index now) */}
+      <NeuralBackground />
+      
+      {/* 2. Content Layer - FORCED TO FRONT with z-50 */}
       <div className="relative z-50 max-w-7xl mx-auto p-6 pt-24">
         
         {/* Header */}
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
               (activeTab === 'skills' && skills.length === 0) || 
               (activeTab === 'blogs' && blogs.length === 0)) && (
                 <div className="text-center py-20 border border-gray-800 rounded-lg bg-gray-900/50">
-                  <p className="text-gray-500 font-mono">No data found in this sector.</p>
+                  <p className="text-gray-500 font-mono">No data found in this sector. Add an entry to begin.</p>
                 </div>
             )}
 
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
             {activeTab === 'projects' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map(p => (
-                  <div key={p._id} className="bg-black/90 border border-gray-800 p-6 rounded-xl hover:border-red-600 transition-all group hover:shadow-[0_0_20px_rgba(220,38,38,0.15)] relative">
+                  <div key={p._id} className="bg-black/90 border border-gray-800 p-6 rounded-xl hover:border-red-600 transition-all group relative">
                     <h3 className="font-bold text-lg text-white mb-2 group-hover:text-red-500 transition-colors">{p.title}</h3>
                     <p className="text-xs text-gray-500 mb-4 font-sans line-clamp-2">{p.description}</p>
                     <div className="flex justify-between mt-auto pt-4 border-t border-gray-900 items-center">
