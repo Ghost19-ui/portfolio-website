@@ -6,20 +6,17 @@ import Contact from './pages/Contact';
 import AdminLogin from './pages/Admin/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import { AuthContext, AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute'; // <--- IMPORT THE BOUNCER
 
 function Layout({ children }) {
   const { user } = useContext(AuthContext);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  // State to track if user has scrolled down
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // If user scrolls down more than 20px, activate shrink effect
       setScrolled(window.scrollY > 20);
     };
-    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -27,12 +24,12 @@ function Layout({ children }) {
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-cyan-500/30 text-slate-100 bg-slate-950">
       
-      {/* Dynamic Header with Shrink Animation */}
+      {/* Header */}
       <header 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
           scrolled 
-            ? 'h-16 bg-slate-950/80 backdrop-blur-md border-slate-800 shadow-cyan-500/5 shadow-lg' // Scrolled: Smaller & Darker
-            : 'h-24 bg-transparent border-transparent' // Top: Taller & Transparent
+            ? 'h-16 bg-slate-950/80 backdrop-blur-md border-slate-800 shadow-cyan-500/5 shadow-lg' 
+            : 'h-24 bg-transparent border-transparent'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
@@ -106,7 +103,7 @@ function Layout({ children }) {
         </div>
       )}
 
-      {/* Main Content - Padded so it's not hidden behind the fixed header */}
+      {/* Main Content */}
       <main className="flex-grow pt-24 w-full relative z-10">
         {children}
       </main>
@@ -123,8 +120,17 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/contact" element={<Contact />} />
+            
+            {/* Public Login Route */}
             <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            
+            {/* --- SECURE ZONE START --- */}
+            {/* Only logged-in users can pass this point */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            </Route>
+            {/* --- SECURE ZONE END --- */}
+            
           </Routes>
         </Layout>
       </Router>

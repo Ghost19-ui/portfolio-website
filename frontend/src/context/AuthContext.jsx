@@ -1,44 +1,57 @@
-// src/context/AuthContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
+import api from '../api/axiosConfig';
 
-// 1. Create the Context
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-// 2. Create the Provider Component
-export function AuthProvider({ children }) {
+export const useAuth = () => useContext(AuthContext);
+
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check local storage on initial load
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
-
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
+    // SECURITY UPDATE: Check sessionStorage instead of localStorage
+    const token = sessionStorage.getItem('token');
+    
+    if (token) {
+      // If token exists, try to fetch user data
+      // (Optional: You can add an API call here to verify token validity)
+      setUser({ token }); 
     }
     setLoading(false);
   }, []);
 
-  const login = (authToken, userData) => {
-    setToken(authToken);
-    setUser(userData);
-    localStorage.setItem('token', authToken);
-    localStorage.setItem('user', JSON.stringify(userData));
+  const login = async (email, password) => {
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      
+      const { token, user } = response.data; // Adjust based on your actual API response structure
+      
+      // SECURITY UPDATE: Save to sessionStorage (dies when tab closes)
+      sessionStorage.setItem('token', token);
+      
+      setUser(user || { token }); // specific user data if available
+      return { success: true };
+    } catch (error) {
+      console.error("Login error", error);
+      return { 
+        success: false, 
+        error: error.response?.data?.error || 'Login failed' 
+      };
+    }
   };
 
   const logout = () => {
-    setToken(null);
+    // SECURITY UPDATE: Clear sessionStorage
+    sessionStorage.removeItem('token');
     setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    // Optional: force reload to clear any memory states
+    window.location.href = '/';
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );
-}
+};
