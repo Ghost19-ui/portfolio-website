@@ -22,21 +22,39 @@ export default function AdminDashboard() {
   const [newSkill, setNewSkill] = useState({ category: 'Cybersecurity', name: '', level: 50 });
   const [newBlog, setNewBlog] = useState({ title: '', content: '', summary: '', tags: '' });
 
+  // --- HELPER: Get Auth Headers Manually ---
+  const getAuthConfig = () => {
+    const token = localStorage.getItem("token");
+    return {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
+  };
+
   // Fetch Logic
   const fetchData = async () => {
     setLoading(true);
+    const config = getAuthConfig(); // Get token
+
     try {
       if (activeTab === 'projects') {
-        const { data } = await API.get('/projects');
+        // Pass config as 2nd argument for GET
+        const { data } = await API.get('/projects', config);
         setProjects(Array.isArray(data) ? data : []);
       } else if (activeTab === 'skills') {
-        const { data } = await API.get('/content/skills');
+        const { data } = await API.get('/content/skills', config);
         setSkills(Array.isArray(data) ? data : []);
       } else if (activeTab === 'blogs') {
-        const { data } = await API.get('/content/blogs');
+        const { data } = await API.get('/content/blogs', config);
         setBlogs(Array.isArray(data) ? data : []);
       }
-    } catch (e) { console.error("Fetch Error:", e); } finally { setLoading(false); }
+    } catch (e) { 
+        console.error("Fetch Error:", e); 
+    } finally { 
+        setLoading(false); 
+    }
   };
 
   useEffect(() => { fetchData(); }, [activeTab]);
@@ -44,24 +62,33 @@ export default function AdminDashboard() {
   // Create Handler
   const handleCreate = async (e) => {
     e.preventDefault();
+    const config = getAuthConfig(); // Get token
+
     try {
       if (activeTab === 'projects') {
         const tech = newProject.technologies.split(',').map(t => t.trim());
-        await API.post('/projects', { ...newProject, technologies: tech });
+        // Pass config as 3rd argument for POST
+        await API.post('/projects', { ...newProject, technologies: tech }, config);
       } else if (activeTab === 'skills') {
-        await API.post('/content/skills', newSkill);
+        await API.post('/content/skills', newSkill, config);
       } else if (activeTab === 'blogs') {
         const tags = newBlog.tags.split(',').map(t => t.trim());
-        await API.post('/content/blogs', { ...newBlog, tags });
+        await API.post('/content/blogs', { ...newBlog, tags }, config);
       }
       setShowModal(false);
       fetchData();
-    } catch (error) { alert("Operation failed. Check console."); }
+      alert("Deployed successfully!");
+    } catch (error) { 
+        console.error("Create Error:", error);
+        alert("Operation failed. Check console."); 
+    }
   };
 
   // Delete Handler
   const handleDelete = async (id, type, subId = null) => {
     if (!window.confirm("Confirm deletion?")) return;
+    const config = getAuthConfig(); // Get token
+
     try {
       let endpoint = '';
       if (type === 'project') endpoint = `/projects/${id}`;
@@ -69,18 +96,22 @@ export default function AdminDashboard() {
       if (type === 'skillItem') endpoint = `/content/skills/${id}/${subId}`;
       if (type === 'blog') endpoint = `/content/blogs/${id}`;
       
-      await API.delete(endpoint);
+      // Pass config as 2nd argument for DELETE
+      await API.delete(endpoint, config);
       fetchData();
-    } catch (e) { alert("Delete failed"); }
+    } catch (e) { 
+        console.error("Delete Error:", e);
+        alert("Delete failed"); 
+    }
   };
 
   return (
     <div className="min-h-screen bg-black text-white font-mono relative">
       
-      {/* 1. Background Component (Handles its own Z-Index now) */}
+      {/* 1. Background Component */}
       <NeuralBackground />
       
-      {/* 2. Content Layer - FORCED TO FRONT with z-50 */}
+      {/* 2. Content Layer */}
       <div className="relative z-50 max-w-7xl mx-auto p-6 pt-24">
         
         {/* Header */}
