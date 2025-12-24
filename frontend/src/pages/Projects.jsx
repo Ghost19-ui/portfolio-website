@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API from '../api/axiosConfig';
-import NeuralBackground from '../components/NeuralBackground';
+import CyberGlobe from '../components/CyberGlobe'; // <--- UPDATED IMPORT
 import { Loader2, Github, ExternalLink, Terminal } from 'lucide-react';
 
 const Projects = () => {
@@ -25,7 +25,8 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen bg-black text-white font-mono relative overflow-hidden">
-      <NeuralBackground />
+      {/* 1. REPLACED MISSING BACKGROUND WITH CYBERGLOBE */}
+      <CyberGlobe />
       
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
         {/* Header Section */}
