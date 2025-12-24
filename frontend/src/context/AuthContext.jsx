@@ -1,41 +1,44 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import API from '../api/axiosConfig';
 
 export const AuthContext = createContext();
-
-// --- THIS WAS MISSING AND CAUSED THE BUILD FAIL ---
-export const useAuth = () => useContext(AuthContext);
-// --------------------------------------------------
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Check if user is logged in when the app starts
   useEffect(() => {
-    const checkUser = async () => {
-      const token = localStorage.getItem('token');
+    const checkUserLoggedIn = async () => {
+      // CHANGED: Check localStorage
+      const token = localStorage.getItem('token'); 
+      
       if (token) {
         try {
-          const { data } = await API.get('/auth/me'); 
-          setUser(data.user || data); 
+          // Verify the token is valid with the backend
+          const { data } = await API.get('/auth/me');
+          setUser(data.data);
         } catch (error) {
-          localStorage.removeItem('token');
+          console.error("Session expired or invalid:", error);
+          localStorage.removeItem('token'); // Clear bad token
           setUser(null);
         }
       }
       setLoading(false);
     };
-    checkUser();
+
+    checkUserLoggedIn();
   }, []);
 
-  const login = (token, userData) => {
-    localStorage.setItem('token', token);
-    setUser(userData);
+  const login = (token) => {
+    localStorage.setItem('token', token); // Save to LocalStorage
+    setUser({ token }); // Optimistically set user
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('token'); // Clear from LocalStorage
     setUser(null);
+    window.location.href = '/admin/login'; // Force redirect
   };
 
   return (

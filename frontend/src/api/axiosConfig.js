@@ -1,14 +1,15 @@
-// src/api/axiosConfig.js
 import axios from 'axios';
 
-const api = axios.create({
-  // Ensure this URL matches your deployed backend URL on Vercel/Render
-  baseURL: 'https://portfolio-cgpo.vercel.app/api/v1',
+const API = axios.create({
+  // Use environment variable or fallback to localhost for development
+  baseURL: 'https://portfolio-cgpo.vercel.app/api/v1', 
   withCredentials: true,
 });
 
-api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem('token'); 
+// REQUEST INTERCEPTOR: Attaches the token to every outgoing message
+API.interceptors.request.use((config) => {
+  // CHANGED: Now looks in localStorage (where we saved it) instead of sessionStorage
+  const token = localStorage.getItem('token'); 
   
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -18,4 +19,4 @@ api.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
-export default api;
+export default API;
