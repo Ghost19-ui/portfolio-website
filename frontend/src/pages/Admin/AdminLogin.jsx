@@ -1,118 +1,38 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useEffect, useState } from 'react';
 import API from '../../api/axiosConfig';
-import { Lock, User, ArrowRight, AlertTriangle, ShieldAlert, Eye, EyeOff } from 'lucide-react';
-import CyberGlobe from '../../components/CyberGlobe'; // <--- FIXED IMPORT
 
-export default function AdminLogin() {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  
-  const { login, user } = useContext(AuthContext);
-  const navigate = useNavigate();
+export default function AdminLogs() {
+  const [logs, setLogs] = useState([]);
 
-  // Redirect if already logged in
-  useEffect(() => { 
-    if (user) navigate('/admin/dashboard'); 
-  }, [user, navigate]);
-
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(''); 
-    setLoading(true);
-    
-    try {
-      const response = await API.post('/auth/login', formData);
-      
-      const token = response.data.token;
-      const userData = response.data.user;
-
-      if (!token || !userData) {
-        throw new Error("Invalid response from server. Missing token or user data.");
-      }
-
-      login(token, userData);
-      navigate('/admin/dashboard');
-    } catch (err) { 
-      console.error(err);
-      setError(err.response?.data?.error || err.message || 'Access Denied'); 
-    } finally { 
-      setLoading(false); 
-    }
-  };
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const res = await API.get('/admin/logs');
+        setLogs(res.data);
+      } catch (err) { console.error("Log fetch failed", err); }
+    };
+    fetchLogs();
+    const interval = setInterval(fetchLogs, 5000); 
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-black font-mono relative overflow-hidden">
-      {/* 1. BACKGROUND - Z-INDEX 0 */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <CyberGlobe /> {/* <--- FIXED COMPONENT */}
-      </div>
-      
-      {/* 2. FORM - Z-INDEX 20 */}
-      <div className="relative z-20 w-full max-w-md p-6">
-        <div className="bg-black/90 backdrop-blur-xl border border-red-600/50 p-8 shadow-[0_0_60px_rgba(220,38,38,0.15)] rounded-2xl">
-          
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-red-950/30 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-600 animate-pulse shadow-[0_0_20px_rgba(220,38,38,0.4)]">
-              <ShieldAlert className="text-red-500" size={32} />
+    <div className="p-6 bg-black min-h-screen font-mono text-sm">
+      <div className="border border-red-900/50 bg-black/80 p-6 rounded shadow-[0_0_40px_rgba(220,38,38,0.1)]">
+        <h2 className="text-red-600 mb-6 flex items-center gap-2 border-b border-red-900/30 pb-2 uppercase font-bold">
+          <span className="w-2 h-2 bg-red-600 rounded-full animate-ping" />
+          System_Log_Stream_V4.0
+        </h2>
+        <div className="space-y-1 h-[500px] overflow-y-auto scrollbar-hide">
+          {logs.map((log, i) => (
+            <div key={i} className="flex gap-4 py-1 hover:bg-red-950/10 transition-colors">
+              <span className="text-zinc-600">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
+              <span className={log.level === 'ERROR' ? 'text-red-600 font-bold' : 'text-green-600'}>{log.level}</span>
+              <span className="text-red-400 font-bold uppercase">{log.event}:</span>
+              <span className="text-zinc-400">{log.details}</span>
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-widest uppercase">Restricted Access</h1>
-            <p className="text-red-500 text-xs mt-2 uppercase tracking-[0.2em]">Authorized Personnel Only</p>
-          </div>
-
-          {error && (
-            <div className="bg-red-950/80 border border-red-500 text-red-200 text-xs p-3 mb-6 flex items-center gap-2 rounded animate-pulse">
-              <AlertTriangle size={16} /> {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="text-[10px] text-red-500 uppercase font-bold block mb-1 tracking-wider">Operator ID</label>
-              <div className="relative group">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 transition-colors" size={18} />
-                <input 
-                  type="email" 
-                  name="email" 
-                  value={formData.email} 
-                  onChange={handleChange} 
-                  className="w-full bg-black/50 border border-gray-800 py-3 pl-10 text-white focus:border-red-600 outline-none transition-all focus:shadow-[0_0_15px_rgba(220,38,38,0.3)] rounded" 
-                  placeholder="admin@sys.local" 
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[10px] text-red-500 uppercase font-bold block mb-1 tracking-wider">Security Token</label>
-              <div className="relative group">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 transition-colors" size={18} />
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  name="password" 
-                  value={formData.password} 
-                  onChange={handleChange} 
-                  className="w-full bg-black/50 border border-gray-800 py-3 pl-10 pr-10 text-white focus:border-red-600 outline-none transition-all focus:shadow-[0_0_15px_rgba(220,38,38,0.3)] rounded" 
-                  placeholder="••••••••" 
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors z-20 cursor-pointer"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <button disabled={loading} className="w-full bg-red-600 hover:bg-red-700 text-black font-bold py-4 uppercase tracking-[0.2em] flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(220,38,38,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] rounded mt-4 cursor-pointer relative z-30">
-              {loading ? 'Verifying...' : <>Authenticate <ArrowRight size={18} /></>}
-            </button>
-          </form>
+          ))}
+          <div className="text-red-500 animate-pulse mt-2">_</div>
         </div>
       </div>
     </div>
