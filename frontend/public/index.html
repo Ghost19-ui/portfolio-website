@@ -1,335 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tushar Saini | Portfolio</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <title>Tusha | Cybersecurity & Full‑Stack Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#020617" />
+
+    <!-- SEO -->
+    <meta
+      name="description"
+      content="Portfolio of Tusha, a cybersecurity-focused full‑stack developer building secure MERN and AI-powered security tools."
+    />
+    <meta
+      name="keywords"
+      content="Tusha, portfolio, cybersecurity, ethical hacking, full stack developer, MERN, React, Node, AI security"
+    />
+    <meta name="author" content="Tusha" />
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Tusha | Cybersecurity & Full‑Stack Portfolio"
+    />
+    <meta
+      property="og:description"
+      content="Showcasing projects in web security, MERN stack, and AI‑driven defense tools."
+    />
+    <meta property="og:url" content="https://your-domain.vercel.app/" />
+    <meta property="og:image" content="%PUBLIC_URL%/preview.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+    <!-- Manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- Fonts / Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Minimal base styles; visual design handled by Tailwind -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
-
-        /* 1. BASIC RESET */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'JetBrains Mono', monospace;
-            color: #a0a0a0;
-            /* Allow scrolling, but background stays black if animation fails */
-            background-color: #09090b; 
-            overflow-x: hidden;
+      body {
+        margin: 0;
+      }
+      #root {
+        min-height: 100vh;
+      }
+      #root-loading {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      #root-loading .spinner {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 999px;
+        border: 3px solid rgba(148, 163, 184, 0.4);
+        border-top-color: #38bdf8;
+        animation: spin 0.8s linear infinite;
+      }
+      #root-loading p {
+        margin-top: 0.75rem;
+        font-size: 0.875rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-align: center;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
-
-        /* 2. BACKGROUND ANIMATION CONTAINER */
-        /* This forces the Three.js canvas to stay in the background */
-        #canvas-container {
-            position: fixed; /* Stays in place when you scroll */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* Puts it BEHIND everything else */
-            overflow: hidden;
-        }
-
-        /* 3. YOUR WEBSITE CONTENT */
-        /* This sits ON TOP of the animation */
-        main {
-            position: relative;
-            z-index: 1; /* Puts it IN FRONT */
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Navbar styles */
-        nav {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 1.5rem 3rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-        .logo i { margin-right: 10px; color: #ff3333; }
-        .logo span { color: #ff3333; font-size: 0.8rem; margin-left: 5px; }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-        }
-
-        .nav-links li { margin-left: 30px; }
-        .nav-links a { text-decoration: none; color: #a0a0a0; font-size: 0.9rem; letter-spacing: 1px; }
-        .login-btn { 
-            background: transparent; 
-            border: 1px solid #333; 
-            padding: 8px 20px; 
-            color: #a0a0a0; 
-            cursor: pointer;
-            margin-left: 30px;
-            font-family: inherit;
-        }
-
-        /* Terminal Card Style */
-        .card {
-            background: rgba(15, 15, 18, 0.8);
-            border: 1px solid #1f1f23;
-            backdrop-filter: blur(5px);
-            padding: 0;
-            max-width: 800px;
-            width: 100%;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-        }
-        
-        .card-header {
-            background: #1a1a1d;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #1f1f23;
-            font-size: 0.8rem;
-        }
-
-        .terminal-dots span {
-            height: 10px;
-            width: 10px;
-            background-color: #333;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 5px;
-        }
-        .terminal-dots span:nth-child(1) { background-color: #ff5f56; }
-        .terminal-dots span:nth-child(2) { background-color: #ffbd2e; }
-        .terminal-dots span:nth-child(3) { background-color: #27c93f; }
-
-        .card-body { padding: 40px; }
-        
-        .command-line { margin-bottom: 20px; }
-        .command-line span.path { color: #ff3333; }
-        .command-line span.command { color: #27c93f; }
-
-        h1 { color: white; font-size: 3rem; margin: 20px 0; }
-        h2 { color: #ff3333; font-size: 1.2rem; letter-spacing: 2px; margin-bottom: 20px; }
-        p { line-height: 1.6; margin-bottom: 30px; }
-        .highlight { color: #ff3333; }
-
-        .buttons { display: flex; gap: 20px; }
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            letter-spacing: 1px;
-        }
-        .btn-primary {
-            background: #ff3333;
-            color: white;
-        }
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid #ff3333;
-            color: #ff3333;
-        }
-        .btn i { margin-left: 10px; }
-        .btn-secondary i { margin-right: 10px; margin-left: 0; }
-
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 20px;
-            background: #ff3333;
-            animation: blink 1s infinite;
-        }
-        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
-
+      }
     </style>
-</head>
-<body>
+  </head>
 
-    <div id="canvas-container"></div>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
 
-    <nav>
-        <div class="logo">
-            <i class="fas fa-shield-alt"></i> Tushar Saini 
-            <span>RED TEAM OPERATOR</span>
+    <div id="root">
+      <div id="root-loading">
+        <div>
+          <div class="spinner"></div>
+          <p>Booting security console…</p>
         </div>
-        <ul class="nav-links">
-            <li><a href="#">HOME</a></li>
-            <li><a href="#">PROJECTS</a></li>
-            <li><a href="#">BLOG</a></li>
-            <li><a href="#">CONTACT</a></li>
-        </ul>
-        <button class="login-btn">LOGIN</button>
-    </nav>
-
-    <main>
-        <div class="card">
-            <div class="card-header">
-                <div><i class="fas fa-terminal"></i> root@red-team:~/operations</div>
-                <div class="terminal-dots">
-                    <span></span><span></span><span></span>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="command-line">
-                    <span class="path">~</span> ./initialize_profile.sh --force
-                </div>
-                <div style="color: #27c93f;">[+] Loading modules... DONE</div>
-                <div style="color: #27c93f;">[+] Establishing secure connection... CONNECTED</div>
-                <div style="color: #27c93f;">[+] Decrypting bio... SUCCESS</div>
-
-                <h1>Tushar Saini</h1>
-                <h2>OFFENSIVE SECURITY ENGINEER</h2>
-
-                <p>
-                    Specializing in <span class="highlight">Vulnerability Assessment</span>, <span class="highlight">Penetration Testing</span>, and <span class="highlight">Network Intrusion</span>. I simulate advanced cyber attacks to identify weaknesses and secure critical infrastructure before adversaries can exploit them.
-                </p>
-
-                <div class="buttons">
-                    <a href="#" class="btn btn-primary">VIEW OPERATIONS <i class="fas fa-arrow-right"></i></a>
-                    <a href="#" class="btn btn-secondary"><i class="fas fa-download"></i> DOWNLOAD INTEL</a>
-                </div>
-                <div style="margin-top: 30px;">
-                    <span class="path">~</span> <span class="cursor"></span>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-    <script id="vertexShader" type="x-shader/x-vertex">
-        varying vec2 vUv;
-        void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-    </script>
-
-    <script id="fragmentShader" type="x-shader/x-fragment">
-        uniform float iTime;
-        uniform sampler2D iChannel0;
-        varying vec2 vUv;
-
-        // Function for noise to create organic movement
-        float noise(vec2 p) {
-            return sin(p.x * 10.0 + iTime) * sin(p.y * 10.0 + iTime);
-        }
-
-        void main() {
-            vec2 uv = vUv;
-            
-            // Fetch color
-            vec4 color = texture2D(iChannel0, uv);
-            
-            // Symbiote Logic: Target red/bright areas
-            if(color.r > color.b + 0.1 || color.r > 0.6) {
-                
-                // Create a more complex, organic wave effect
-                float n = noise(uv * 3.0 + iTime * 0.5);
-                vec2 distortedUv = uv + vec2(n * 0.02, n * 0.03);
-                color = texture2D(iChannel0, distortedUv);
-                
-                // Add a strong, pulsing red glow
-                float pulse = (sin(iTime * 2.0) + 1.0) * 0.15;
-                color.r += pulse;
-                // darken the other channels to make red pop
-                color.g *= 0.8;
-                color.b *= 0.8;
-            }
-            gl_FragColor = color;
-        }
-    </script>
-
-    <script>
-        let camera, scene, renderer, uniforms;
-        let mouseX = 0, mouseY = 0;
-        const container = document.getElementById('canvas-container');
-
-        init();
-        animate();
-
-        function init() {
-            camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 1, 2000);
-            camera.position.z = 100;
-
-            scene = new THREE.Scene();
-            
-            // TEXTURE LOADER
-            const loader = new THREE.TextureLoader();
-            // MAKE SURE THIS MATCHES YOUR IMAGE FILENAME
-            const texture = loader.load('wallpaper.png'); 
-
-            uniforms = {
-                iTime: { value: 1.0 },
-                iChannel0: { value: texture }
-            };
-
-            const material = new THREE.ShaderMaterial({
-                uniforms: uniforms,
-                vertexShader: document.getElementById('vertexShader').textContent,
-                fragmentShader: document.getElementById('fragmentShader').textContent
-            });
-
-            // Use a larger plane to cover the screen
-            const geometry = new THREE.PlaneGeometry(192, 108); // 16:9 aspect ratio
-            const mesh = new THREE.Mesh(geometry, material);
-            scene.add(mesh);
-
-            renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            container.appendChild(renderer.domElement);
-
-            document.addEventListener('mousemove', onDocumentMouseMove, false);
-            window.addEventListener('resize', onWindowResize, false);
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function onDocumentMouseMove(event) {
-            // Parallax effect
-            mouseX = (event.clientX - window.innerWidth / 2) * 0.02;
-            mouseY = (event.clientY - window.innerHeight / 2) * 0.02;
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            render();
-        }
-
-        function render() {
-            uniforms.iTime.value += 0.05;
-            // Smooth camera movement
-            camera.position.x += (mouseX - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY - camera.position.y) * 0.05;
-            camera.lookAt(scene.position);
-            renderer.render(scene, camera);
-        }
-    </script>
-</body>
+      </div>
+    </div>
+  </body>
 </html>
