@@ -1,4 +1,9 @@
-/* 1. THEME VARIABLES */
+/* --- 1. TAILWIND INITIALIZATION (CRITICAL) --- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- 2. THEME VARIABLES --- */
 :root {
   --primary-red: #ff0f39;
   --accent-blue: #00d9ff;
@@ -6,7 +11,7 @@
   --glass-panel: rgba(10, 10, 15, 0.75);
 }
 
-/* 2. BASE SETTINGS */
+/* --- 3. BASE SETTINGS --- */
 body {
   margin: 0;
   font-family: 'JetBrains Mono', monospace;
@@ -15,14 +20,15 @@ body {
   overflow-x: hidden;
 }
 
-/* 3. UTILITIES */
+/* --- 4. UTILITIES --- */
 .highlight { 
   color: white; 
   background: rgba(255, 15, 57, 0.2); 
   padding: 2px 5px; 
 }
 
-/* 4. PROFILE CARD (The "Red Team" Box) */
+/* --- 5. PROFILE CARD (Legacy Support) --- */
+/* Kept in case you use the old card, but HoloCard uses Tailwind now */
 .profile-card {
   width: 100%; 
   max-width: 850px;
@@ -32,7 +38,6 @@ body {
   border-left: 4px solid var(--primary-red);
   border-right: 4px solid var(--accent-blue);
   box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-  /* This creates the sci-fi cut corner shape */
   clip-path: polygon(0 0, 100% 0, 100% 90%, 95% 100%, 0 100%);
   margin: 20px;
 }
@@ -61,75 +66,11 @@ body {
   box-shadow: 0 0 10px var(--primary-red);
 }
 
-/* 5. TYPOGRAPHY INSIDE CARD */
-.profile-card h1 { 
-  font-family: 'Rajdhani', sans-serif; 
-  font-size: 4rem; 
-  color: white; 
-  line-height: 1; 
-  margin: 0 0 10px 0; 
-}
+/* --- 6. TYPOGRAPHY --- */
+h1 { font-family: 'Rajdhani', sans-serif; }
+h2 { font-family: 'Rajdhani', sans-serif; }
 
-.profile-card h2 { 
-  font-size: 1.2rem; 
-  color: var(--primary-red); 
-  margin-bottom: 30px; 
-  letter-spacing: 4px; 
-  text-transform: uppercase; 
-  font-family: 'Rajdhani', sans-serif; 
-}
-
-.profile-card p { 
-  line-height: 1.6; 
-  margin-bottom: 40px; 
-  border-left: 2px solid #333; 
-  padding-left: 20px; 
-}
-
-/* 6. BUTTONS */
-.btn-container {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  padding: 15px 40px; 
-  border: none; 
-  font-family: 'Rajdhani', sans-serif; 
-  font-weight: 700; 
-  text-transform: uppercase; 
-  cursor: pointer; 
-  letter-spacing: 2px; 
-  text-decoration: none; 
-  display: flex; 
-  align-items: center;
-  transition: all 0.3s ease;
-}
-
-.btn-primary { 
-  background: var(--primary-red); 
-  color: white; 
-  clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%); 
-}
-
-.btn-primary:hover {
-  background: white;
-  color: var(--primary-red);
-  box-shadow: 0 0 20px var(--primary-red);
-}
-
-.btn-secondary { 
-  background: transparent; 
-  border: 1px solid var(--accent-blue); 
-  color: var(--accent-blue); 
-}
-
-.btn-secondary:hover {
-  background: rgba(0, 217, 255, 0.1);
-  box-shadow: 0 0 15px var(--accent-blue);
-}
-
+/* --- 7. BUTTONS & ANIMATIONS --- */
 /* Floating Animation for Holo Cards */
 @keyframes float {
   0% { transform: translateY(0px); }
