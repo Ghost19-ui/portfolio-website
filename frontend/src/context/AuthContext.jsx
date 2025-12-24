@@ -1,7 +1,13 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react'; // Added useContext
 import API from '../api/axiosConfig';
 
 export const AuthContext = createContext();
+
+// --- THIS WAS MISSING ---
+// This allows other files to say "import { useAuth } from ..."
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -10,7 +16,7 @@ export const AuthProvider = ({ children }) => {
   // Check if user is logged in when the app starts
   useEffect(() => {
     const checkUserLoggedIn = async () => {
-      // CHANGED: Check localStorage
+      // Check localStorage for the key
       const token = localStorage.getItem('token'); 
       
       if (token) {
