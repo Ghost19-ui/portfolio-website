@@ -1,28 +1,16 @@
-const Log = require('../models/Log');
+// backend/routes/admin.js
+const express = require('express');
+const router = express.Router();
+const { getLogs, createLog } = require('../controllers/logController');
+const { getMessages, saveMessage } = require('../controllers/messageController');
+const { protect } = require('../middleware/authMiddleware');
 
-// Create a new system log entry
-exports.createLog = async (req, res) => {
-    try {
-        const { event, details, level } = req.body;
-        const newLog = new Log({
-            event,
-            details,
-            level,
-            ip: req.ip // Automatically capture requester IP
-        });
-        await newLog.save();
-        res.status(201).json({ success: true });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
+// Public routes for Contact page
+router.post('/messages', saveMessage);
+router.post('/logs', createLog);
 
-// Fetch recent logs for the Live Terminal
-exports.getLogs = async (req, res) => {
-    try {
-        const logs = await Log.find().sort({ timestamp: -1 }).limit(100);
-        res.status(200).json(logs);
-    } catch (error) {
-        res.status(500).json({ error: "Failed to stream logs." });
-    }
-};
+// Protected routes for Admin Dashboard
+router.get('/messages', protect, getMessages);
+router.get('/logs', protect, getLogs);
+
+module.exports = router;

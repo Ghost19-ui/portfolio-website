@@ -2,14 +2,12 @@
 import axios from 'axios';
 
 const api = axios.create({
+  // Ensure this URL matches your deployed backend URL on Vercel/Render
   baseURL: 'https://portfolio-cgpo.vercel.app/api/v1',
   withCredentials: true,
 });
 
-// Request interceptor to add the Token to every request
 api.interceptors.request.use((config) => {
-  // SECURITY UPDATE: Change localStorage to sessionStorage
-  // This ensures the token is found only while the tab is open.
   const token = sessionStorage.getItem('token'); 
   
   if (token) {
