@@ -1,12 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
+import API from '../api/axiosConfig'; // Import the configured API
 import HoloCard from '../components/HoloCard';
-import emailjs from '@emailjs/browser';
-import API from '../api/axiosConfig'; // Assuming your axios instance is here
+import { Send, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const Contact = () => {
-  const form = useRef();
-  const [formData, setFormData] = useState({ user_name: '', user_email: '', message: '' });
-  const [status, setStatus] = useState('IDLE');
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [status, setStatus] = useState('idle'); // idle, loading, success, error
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,73 +13,126 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus('SENDING');
+    setStatus('loading');
 
     try {
-      // 1. SAVE TO DATABASE
-      await API.post('/admin/messages', {
-        name: formData.user_name,
-        email: formData.user_email,
-        content: formData.message
-      });
-
-      // 2. LOG THE EVENT
-      await API.post('/admin/logs', {
-        event: 'UPLINK_ESTABLISHED',
-        details: `Payload received from ${formData.user_name}`,
-        level: 'INFO'
-      });
-
-      // 3. SEND EMAIL (EMAILJS)
-      emailjs.init("65Ue8NN3c1qoElj2b");
-      await emailjs.sendForm('service_e90837s', 'template_pakz0ci', form.current);
-
-      setStatus('SENT');
-      setFormData({ user_name: '', user_email: '', message: '' });
-      setTimeout(() => setStatus('IDLE'), 4000);
+      // Use the API instance so it goes to your live backend
+      await API.post('/contact', formData); 
+      
+      setStatus('success');
+      setFormData({ name: '', email: '', message: '' }); // Clear form
+      
     } catch (error) {
-      console.error('SYSTEM_CRITICAL_ERROR:', error);
-      setStatus('ERROR');
-      setTimeout(() => setStatus('IDLE'), 3000);
+      console.error("Message Transmission Failed:", error);
+      setStatus('error');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 pt-20 bg-black font-mono">
+    <div className="min-h-screen flex items-center justify-center p-4 pt-24">
       <div className="w-full max-w-2xl">
         <HoloCard title="ENCRYPTED_CHANNEL_V4">
-            <div className="mb-8 text-center">
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tighter uppercase">
-                    Establish <span className="text-red-600">Uplink</span>
-                </h1>
-                <p className="text-slate-400 text-sm">// All communications are logged and secured.</p>
-            </div>
+          
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold font-mono text-white mb-2 uppercase tracking-tighter">
+              Establish <span className="text-red-600">Uplink</span>
+            </h2>
+            <p className="text-xs font-mono text-slate-400 tracking-widest">
+              // All communications are logged and secured.
+            </p>
+          </div>
 
-            <form ref={form} onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                    <label className="text-xs text-red-500 uppercase tracking-widest font-bold">Agent Identity</label>
-                    <input type="text" name="user_name" required value={formData.user_name} onChange={handleChange} 
-                           className="w-full bg-black/80 border border-red-900/50 text-slate-200 p-3 outline-none focus:border-red-500 transition-all" />
+          {/* SUCCESS MESSAGE */}
+          {status === 'success' ? (
+            <div className="bg-green-900/20 border border-green-500/50 p-8 rounded text-center animate-in fade-in zoom-in">
+              <div className="flex justify-center mb-4">
+                <CheckCircle className="w-16 h-16 text-green-500" />
+              </div>
+              <h3 className="text-xl text-green-400 font-mono font-bold mb-2">TRANSMISSION COMPLETE</h3>
+              <p className="text-slate-400 text-sm">Your intel has been securely received. Stand by for response.</p>
+              <button 
+                onClick={() => setStatus('idle')}
+                className="mt-6 text-xs uppercase tracking-widest text-green-500 hover:text-white underline"
+              >
+                Send Another Packet
+              </button>
+            </div>
+          ) : (
+            /* CONTACT FORM */
+            <form onSubmit={handleSubmit} className="space-y-6">
+              
+              <div className="space-y-2">
+                <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">
+                  Agent Identity
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your alias"
+                  className="w-full bg-black/80 border border-red-900/50 text-white p-4 rounded focus:border-red-500 focus:outline-none font-mono text-sm transition-all"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">
+                  Return Frequency
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="secure@frequency.com"
+                  className="w-full bg-black/80 border border-red-900/50 text-white p-4 rounded focus:border-red-500 focus:outline-none font-mono text-sm transition-all"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">
+                  Payload
+                </label>
+                <textarea
+                  name="message"
+                  required
+                  rows="5"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Enter encrypted message packet..."
+                  className="w-full bg-black/80 border border-red-900/50 text-white p-4 rounded focus:border-red-500 focus:outline-none font-mono text-sm transition-all resize-none"
+                ></textarea>
+              </div>
+
+              {/* ERROR MESSAGE */}
+              {status === 'error' && (
+                <div className="flex items-center gap-3 text-red-400 bg-red-950/30 p-3 rounded border-l-2 border-red-500 text-xs font-mono">
+                  <AlertTriangle size={16} />
+                  <span>CONNECTION FAILED: Uplink refused by remote server.</span>
                 </div>
-                <div className="space-y-2">
-                    <label className="text-xs text-red-500 uppercase tracking-widest font-bold">Return Frequency</label>
-                    <input type="email" name="user_email" required value={formData.user_email} onChange={handleChange}
-                           className="w-full bg-black/80 border border-red-900/50 text-slate-200 p-3 outline-none focus:border-red-500 transition-all" />
-                </div>
-                <div className="space-y-2">
-                    <label className="text-xs text-red-500 uppercase tracking-widest font-bold">Payload</label>
-                    <textarea name="message" required rows="5" value={formData.message} onChange={handleChange}
-                              className="w-full bg-black/80 border border-red-900/50 text-slate-200 p-3 outline-none focus:border-red-500 transition-all"></textarea>
-                </div>
-                <button type="submit" disabled={status === 'SENDING' || status === 'SENT'}
-                        className={`w-full py-4 font-bold uppercase tracking-widest transition-all 
-                        ${status === 'SENT' ? 'bg-green-600 text-black' : status === 'ERROR' ? 'bg-yellow-600 text-black' : 'bg-red-600 text-black hover:bg-white hover:text-red-600'}`}>
-                    {status === 'IDLE' && 'Initialize Transmission'}
-                    {status === 'SENDING' && 'Encrypting Packets...'}
-                    {status === 'SENT' && 'Transmission Complete'}
-                    {status === 'ERROR' && 'Connection Failed'}
-                </button>
+              )}
+
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className="w-full bg-red-600 hover:bg-white hover:text-red-900 text-black font-bold py-4 uppercase tracking-[0.2em] transition-all clip-path-polygon flex items-center justify-center gap-2 mt-2 group"
+              >
+                {status === 'loading' ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> ENCRYPTING...
+                  </>
+                ) : (
+                  <>
+                    TRANSMIT DATA <Send size={16} className="group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </button>
+
             </form>
+          )}
+
         </HoloCard>
       </div>
     </div>
