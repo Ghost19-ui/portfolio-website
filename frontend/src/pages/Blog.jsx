@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API from '../api/axiosConfig';
-import NeuralBackground from '../components/NeuralBackground';
+import CyberGlobe from '../components/CyberGlobe'; // <--- UPDATED IMPORT
 import { Loader2, Calendar, Tag } from 'lucide-react';
 
 export default function Blog() {
@@ -16,7 +16,9 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen bg-black text-white font-mono relative">
-      <NeuralBackground />
+      {/* 1. REPLACED MISSING BACKGROUND WITH CYBERGLOBE */}
+      <CyberGlobe />
+      
       <div className="relative z-10 max-w-4xl mx-auto px-6 py-20">
         <div className="mb-12 border-b border-red-900/30 pb-6">
           <h1 className="text-4xl font-bold text-white mb-2">INTELLIGENCE_LOGS</h1>
