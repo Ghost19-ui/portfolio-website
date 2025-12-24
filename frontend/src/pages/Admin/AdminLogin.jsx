@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import API from '../../api/axiosConfig';
 import { Shield, Lock, ChevronRight, AlertTriangle, Eye, EyeOff } from 'lucide-react';
-import HoloCard from '../../components/HoloCard'; // Reusing your 3D Card
+import HoloCard from '../../components/HoloCard';
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -25,6 +25,12 @@ export default function AdminLogin() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const togglePassword = (e) => {
+    e.preventDefault(); // Stop form submission triggers
+    e.stopPropagation(); // Stop event bubbling
+    setShowPassword(!showPassword);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -32,14 +38,9 @@ export default function AdminLogin() {
 
     try {
       const { data } = await API.post('/auth/login', formData);
-      
-      // 1. Save Token
       login(data.token);
       localStorage.setItem('token', data.token);
-
-      // 2. FORCE RELOAD to ensure Dashboard access
       window.location.href = '/admin/dashboard';
-      
     } catch (err) {
       console.error("Login Failed:", err);
       setError('ACCESS DENIED: Invalid Security Credentials');
@@ -53,7 +54,6 @@ export default function AdminLogin() {
       <div className="w-full max-w-lg">
         <HoloCard title="IDENTITY_VERIFICATION_V2">
           
-          {/* Header Section */}
           <div className="text-center mb-8 border-b border-red-900/30 pb-6">
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-red-950/20 rounded-full border border-red-600/50 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
@@ -68,7 +68,6 @@ export default function AdminLogin() {
             </p>
           </div>
 
-          {/* Error Display */}
           {error && (
             <div className="mb-6 bg-red-950/40 border-l-4 border-red-600 text-red-200 p-3 font-mono text-xs flex items-center gap-3 animate-pulse">
               <AlertTriangle size={14} />
@@ -76,10 +75,7 @@ export default function AdminLogin() {
             </div>
           )}
 
-          {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* Email Field */}
             <div className="space-y-2">
               <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">
                 Operator ID
@@ -98,7 +94,6 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            {/* Password Field */}
             <div className="space-y-2">
               <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">
                 Security Token
@@ -114,17 +109,19 @@ export default function AdminLogin() {
                   placeholder="••••••••"
                 />
                 <Lock className="absolute left-3 top-3 text-red-700 w-4 h-4 group-focus-within:text-red-500 transition-colors" />
+                
+                {/* FIXED EYE BUTTON: Added z-10 and cursor-pointer */}
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-red-700 hover:text-red-400 transition-colors"
+                  onClick={togglePassword}
+                  className="absolute right-3 top-3 text-red-700 hover:text-red-400 transition-colors z-10 cursor-pointer"
+                  tabIndex="-1" // Prevents tab skipping to this button instead of submit
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
@@ -138,7 +135,6 @@ export default function AdminLogin() {
                 </>
               )}
             </button>
-
           </form>
         </HoloCard>
       </div>
