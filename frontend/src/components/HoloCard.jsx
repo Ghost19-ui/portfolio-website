@@ -1,41 +1,54 @@
 import React from 'react';
-import { Tilt } from 'react-tilt';
 
-const defaultOptions = {
-  reverse:        false,
-  max:            15,     // Max tilt rotation
-  perspective:    1000,   
-  scale:          1.02,   // Slight zoom on hover
-  speed:          1000,   
-  transition:     true,   
-  axis:           null,   
-  reset:          true,   
-  easing:         "cubic-bezier(.03,.98,.52,.99)",    
-};
-
-const HoloCard = ({ children, className = "" }) => {
+const HoloCard = ({ children, title = "SYSTEM TERMINAL" }) => {
   return (
-    <Tilt 
-      options={defaultOptions} 
-      className={`relative group w-full h-full min-h-[250px] ${className}`} 
-    >
-      {/* Glass Background Layer */}
-      <div className="absolute inset-0 bg-red-950/5 backdrop-blur-sm rounded-xl border border-red-500/20 shadow-[0_0_15px_rgba(220,38,38,0.05)] group-hover:border-red-500/50 group-hover:shadow-[0_0_30px_rgba(220,38,38,0.2)] transition-all duration-300"></div>
-      
-      {/* Scanline texture on card */}
-      <div className="absolute inset-0 rounded-xl opacity-5 bg-[linear-gradient(0deg,transparent_24%,rgba(255,0,0,.3)_25%,rgba(255,0,0,.3)_26%,transparent_27%,transparent_74%,rgba(255,0,0,.3)_75%,rgba(255,0,0,.3)_76%,transparent_77%,transparent),linear-gradient(90deg,transparent_24%,rgba(255,0,0,.3)_25%,rgba(255,0,0,.3)_26%,transparent_27%,transparent_74%,rgba(255,0,0,.3)_75%,rgba(255,0,0,.3)_76%,transparent_77%,transparent)] bg-[length:4px_4px]"></div>
+    <div className="holo-container relative group">
+        
+      {/* Floating Animation Wrapper */}
+      <div className="animate-float">
+        
+        {/* The Glass Window */}
+        <div className="
+            relative 
+            bg-black/40 
+            backdrop-blur-md 
+            border border-red-500/30 
+            rounded-lg 
+            p-1 
+            shadow-[0_0_50px_rgba(255,15,57,0.15)]
+            overflow-hidden
+        ">
+            
+          {/* Scanline Effect Overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-0 pointer-events-none bg-[length:100%_4px,6px_100%] opacity-20"></div>
 
-      {/* Content Container */}
-      <div className="relative z-10 p-6 flex flex-col h-full justify-between">
-        {children}
+          {/* Window Header / Title Bar */}
+          <div className="flex justify-between items-center bg-red-900/20 px-4 py-2 border-b border-red-500/30 relative z-10">
+            <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse shadow-[0_0_10px_#ff0000]"></div>
+                <span className="font-mono text-xs text-red-400 tracking-widest uppercase">{title}</span>
+            </div>
+            <div className="flex gap-2">
+                <div className="w-2 h-2 bg-red-500/50"></div>
+                <div className="w-2 h-2 bg-red-500/50"></div>
+                <div className="w-2 h-2 bg-red-500/50"></div>
+            </div>
+          </div>
+
+          {/* Window Content */}
+          <div className="p-8 relative z-10 text-slate-200">
+            {children}
+          </div>
+
+          {/* Decorative Corner Accents */}
+          <div className="absolute top-0 left-0 w-4 h-4 border-l-2 border-t-2 border-red-500"></div>
+          <div className="absolute top-0 right-0 w-4 h-4 border-r-2 border-t-2 border-red-500"></div>
+          <div className="absolute bottom-0 left-0 w-4 h-4 border-l-2 border-b-2 border-red-500"></div>
+          <div className="absolute bottom-0 right-0 w-4 h-4 border-r-2 border-b-2 border-red-500"></div>
+        </div>
       </div>
-
-      {/* Tactical Corner Accents */}
-      <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-red-500 rounded-tl transition-all group-hover:w-4 group-hover:h-4"></div>
-      <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-red-500 rounded-tr transition-all group-hover:w-4 group-hover:h-4"></div>
-      <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-red-500 rounded-bl transition-all group-hover:w-4 group-hover:h-4"></div>
-      <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-red-500 rounded-br transition-all group-hover:w-4 group-hover:h-4"></div>
-    </Tilt>
+      
+    </div>
   );
 };
 
