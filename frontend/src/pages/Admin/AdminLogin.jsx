@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import API from '../../api/axiosConfig';
 import { Lock, User, ArrowRight, AlertTriangle, ShieldAlert, Eye, EyeOff } from 'lucide-react';
-import NeuralBackground from '../../components/NeuralBackground';
+import CyberGlobe from '../../components/CyberGlobe'; // <--- FIXED IMPORT
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -29,9 +29,6 @@ export default function AdminLogin() {
     try {
       const response = await API.post('/auth/login', formData);
       
-      // --- DEBUGGING LOGS (Check Console if it fails) ---
-      console.log("Login Response:", response.data); 
-
       const token = response.data.token;
       const userData = response.data.user;
 
@@ -39,10 +36,7 @@ export default function AdminLogin() {
         throw new Error("Invalid response from server. Missing token or user data.");
       }
 
-      // --- PARAMETER MATCH FIX ---
-      // Calling context with (Token, UserData)
       login(token, userData);
-      
       navigate('/admin/dashboard');
     } catch (err) { 
       console.error(err);
@@ -56,10 +50,10 @@ export default function AdminLogin() {
     <div className="min-h-screen w-full flex items-center justify-center bg-black font-mono relative overflow-hidden">
       {/* 1. BACKGROUND - Z-INDEX 0 */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <NeuralBackground />
+        <CyberGlobe /> {/* <--- FIXED COMPONENT */}
       </div>
       
-      {/* 2. FORM - Z-INDEX 20 (Must be higher than 0) */}
+      {/* 2. FORM - Z-INDEX 20 */}
       <div className="relative z-20 w-full max-w-md p-6">
         <div className="bg-black/90 backdrop-blur-xl border border-red-600/50 p-8 shadow-[0_0_60px_rgba(220,38,38,0.15)] rounded-2xl">
           

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import API from '../../api/axiosConfig';
 import { LogOut, Plus, Trash2, Terminal, Cpu, FileText, X, Loader2, RefreshCw } from 'lucide-react';
-import NeuralBackground from '../../components/NeuralBackground';
+import CyberGlobe from '../../components/CyberGlobe'; // ADD THIS
 
 export default function AdminDashboard() {
   const { user, logout } = useContext(AuthContext);
@@ -109,7 +109,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-black text-white font-mono relative">
       
       {/* 1. Background Component */}
-      <NeuralBackground />
+<CyberGlobe />  {/* ADD THIS */}
       
       {/* 2. Content Layer */}
       <div className="relative z-50 max-w-7xl mx-auto p-6 pt-24">
