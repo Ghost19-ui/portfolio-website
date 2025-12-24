@@ -283,15 +283,47 @@ export default function AdminDashboard() {
         </div>
       )}
       
-      {/* (Other modals for Skills/Blogs omitted for brevity but logic is handled by handleCreate) */}
+      {/* Modal - Skills */}
       {showModal && activeTab === 'skills' && (
          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-           {/* You can copy the skill form logic here if needed, or ask me for the full modal code */}
            <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setShowModal(false)} />
             <div className="relative bg-gray-950 border border-red-600 w-full max-w-lg p-8 rounded-xl shadow-[0_0_50px_rgba(220,38,38,0.3)]">
-                <h2 className="text-white mb-4">Add Skill</h2>
-                {/* Simplified for now to ensure file saves */}
-                <button onClick={() => setShowModal(false)} className="text-red-500">Close</button>
+                <div className="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+                  <h2 className="text-xl font-bold text-white uppercase tracking-widest flex items-center gap-2">New Skill</h2>
+                  <button onClick={() => setShowModal(false)}><X size={24} className="text-white"/></button>
+                </div>
+                <form onSubmit={handleCreate} className="space-y-5">
+                  <select className="w-full bg-black border border-gray-800 text-white p-3 rounded" value={newSkill.category} onChange={e => setNewSkill({...newSkill, category: e.target.value})}>
+                    <option>Cybersecurity</option>
+                    <option>Programming Languages</option>
+                    <option>Web Development</option>
+                    <option>Tools</option>
+                    <option>Other</option>
+                  </select>
+                  <input placeholder="Skill Name" className="w-full bg-black border border-gray-800 text-white p-3 rounded" value={newSkill.name} onChange={e => setNewSkill({...newSkill, name: e.target.value})} required />
+                  <input type="range" className="w-full accent-red-600" min="0" max="100" value={newSkill.level} onChange={e => setNewSkill({...newSkill, level: parseInt(e.target.value)})} />
+                  <button type="submit" className="w-full bg-red-600 p-4 font-bold text-black rounded hover:bg-red-700">DEPLOY</button>
+                </form>
+            </div>
+         </div>
+      )}
+
+      {/* Modal - Blogs */}
+      {showModal && activeTab === 'blogs' && (
+         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+           <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setShowModal(false)} />
+            <div className="relative bg-gray-950 border border-red-600 w-full max-w-lg p-8 rounded-xl shadow-[0_0_50px_rgba(220,38,38,0.3)]">
+                <div className="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+                  <h2 className="text-xl font-bold text-white uppercase tracking-widest flex items-center gap-2">New Intel Report</h2>
+                  <button onClick={() => setShowModal(false)}><X size={24} className="text-white"/></button>
+                </div>
+                <form onSubmit={handleCreate} className="space-y-5">
+                  <input placeholder="Title" className="w-full bg-black border border-gray-800 text-white p-3 rounded" value={newBlog.title} onChange={e => setNewBlog({...newBlog, title: e.target.value})} required />
+                  <input placeholder="Summary" className="w-full bg-black border border-gray-800 text-white p-3 rounded" value={newBlog.summary} onChange={e => setNewBlog({...newBlog, summary: e.target.value})} required />
+                  <input placeholder="Tags (comma separated)" className="w-full bg-black border border-gray-800 text-white p-3 rounded" value={newBlog.tags} onChange={e => setNewBlog({...newBlog, tags: e.target.value})} required />
+                  <textarea placeholder="Content" className="w-full bg-black border border-gray-800 text-white p-3 rounded" rows="5" value={newBlog.content} onChange={e => setNewBlog({...newBlog, content: e.target.value})} required />
+                  <button type="submit" className="w-full bg-red-600 p-4 font-bold text-black rounded hover:bg-red-700">DEPLOY</button>
+                </form>
             </div>
          </div>
       )}
