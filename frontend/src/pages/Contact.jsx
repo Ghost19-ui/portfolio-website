@@ -5,8 +5,9 @@ import emailjs from '@emailjs/browser';
 const Contact = () => {
   const form = useRef();
   
+  // State keys must match the 'name' attributes in the form
   const [formData, setFormData] = useState({
-    user_name: '', // Updated to match input names
+    user_name: '', 
     user_email: '',
     message: ''
   });
@@ -20,21 +21,22 @@ const Contact = () => {
     e.preventDefault();
     setStatus('SENDING');
 
-    // --- YOUR VERIFIED CONFIGURATION ---
+    // CRITICAL: Initialize with your Public Key to prevent 412 or auth errors
+    emailjs.init("65Ue8NN3c1qoElj2b");
+
     emailjs.sendForm(
-      'service_e90837s',     // Your Service ID
-      'template_pakz0ci',    // Your Template ID
-      form.current,
-      '65Ue8NN3c1qoElj2b'    // Your Public Key
+      'service_e90837s',     // Your Verified Service ID
+      'template_pakz0ci',    // Your Verified Template ID
+      form.current
     )
     .then((result) => {
         console.log('SUCCESS!', result.text);
         setStatus('SENT');
-        // Reset local state
+        // Reset state after successful transmission
         setFormData({ user_name: '', user_email: '', message: '' }); 
         setTimeout(() => setStatus('IDLE'), 4000);
     }, (error) => {
-        console.log('FAILED...', error.text);
+        console.error('FAILED...', error);
         setStatus('ERROR');
         setTimeout(() => setStatus('IDLE'), 3000);
     });
@@ -55,6 +57,7 @@ const Contact = () => {
             </div>
 
             <form ref={form} onSubmit={handleSubmit} className="space-y-6">
+                {/* Name Input */}
                 <div className="space-y-2">
                     <label className="text-xs font-mono text-red-400 uppercase tracking-widest ml-1">
                         Agent Identity / Name
@@ -73,6 +76,7 @@ const Contact = () => {
                     </div>
                 </div>
 
+                {/* Email Input */}
                 <div className="space-y-2">
                     <label className="text-xs font-mono text-red-400 uppercase tracking-widest ml-1">
                         Return Frequency / Email
@@ -91,6 +95,7 @@ const Contact = () => {
                     </div>
                 </div>
 
+                {/* Message Input */}
                 <div className="space-y-2">
                     <label className="text-xs font-mono text-red-400 uppercase tracking-widest ml-1">
                         Payload / Message
