@@ -1,5 +1,6 @@
 import React from 'react';
 import HoloCard from '../components/HoloCard';
+import { Shield, Lock, Bug, Terminal } from 'lucide-react'; // Using Lucide icons to match your theme
 
 const Home = () => {
   return (
@@ -10,9 +11,9 @@ const Home = () => {
         <div className="space-y-6">
           <HoloCard title="ROOT_ACCESS_GRANTED">
              <div className="font-mono text-sm text-red-400 mb-4 opacity-70">
-                > Initializing Red Team Protocols...<br/>
-                > Decrypting User Identity...<br/>
-                > Target: Secure Infrastructure<br/>
+                &gt; Initializing Red Team Protocols...<br/>
+                &gt; Decrypting User Identity...<br/>
+                &gt; Target: Secure Infrastructure<br/>
              </div>
              
              <h1 className="text-6xl font-bold font-mono text-white mb-2 tracking-tighter">
@@ -30,32 +31,41 @@ const Home = () => {
              </p>
 
              <div className="flex gap-4">
-                <button className="bg-red-600 text-black font-bold py-3 px-6 uppercase tracking-widest hover:bg-white transition-colors clip-path-polygon">
-                   Initiate
+                <button className="bg-red-600 text-black font-bold py-3 px-6 uppercase tracking-widest hover:bg-white transition-colors clip-path-polygon cursor-pointer flex items-center gap-2">
+                    <Terminal size={18} /> Initiate
                 </button>
-                <button className="border border-red-500 text-red-500 font-bold py-3 px-6 uppercase tracking-widest hover:bg-red-900/20 transition-colors">
-                   Download Intel
-                </button>
+                
+                {/* --- FIXED DOWNLOAD BUTTON --- */}
+                {/* 1. Changed to <a> tag */}
+                {/* 2. Added href="/resume.pdf" */}
+                {/* 3. Added download attribute to force file save */}
+                <a 
+                  href="/resume.pdf" 
+                  download="Tushar_Saini_Resume.pdf"
+                  className="border border-red-500 text-red-500 font-bold py-3 px-6 uppercase tracking-widest hover:bg-red-900/20 transition-colors cursor-pointer text-center flex items-center gap-2"
+                >
+                    Download Intel
+                </a>
              </div>
           </HoloCard>
         </div>
 
-        {/* RIGHT COLUMN: Floating Icons (Matches Reference) */}
+        {/* RIGHT COLUMN: Floating Icons (Updated to use Lucide React) */}
         <div className="hidden lg:flex flex-col gap-6 items-end pointer-events-none">
            
            {/* ICON 1: LOCK */}
            <div className="w-24 h-24 bg-red-900/10 backdrop-blur-sm border border-red-500/30 rounded-full flex items-center justify-center animate-float" style={{animationDelay: '0s'}}>
-              <i className="fas fa-lock text-4xl text-red-500 drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]"></i>
+              <Lock size={40} className="text-red-500 drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]" />
            </div>
 
            {/* ICON 2: SHIELD */}
            <div className="w-24 h-24 bg-red-900/10 backdrop-blur-sm border border-red-500/30 rounded-full flex items-center justify-center animate-float" style={{animationDelay: '1s', marginRight: '40px'}}>
-              <i className="fas fa-shield-alt text-4xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]"></i>
+              <Shield size={40} className="text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)]" />
            </div>
 
            {/* ICON 3: BUG */}
            <div className="w-24 h-24 bg-red-900/10 backdrop-blur-sm border border-red-500/30 rounded-full flex items-center justify-center animate-float" style={{animationDelay: '2s'}}>
-              <i className="fas fa-spider text-4xl text-red-500 drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]"></i>
+              <Bug size={40} className="text-red-500 drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]" />
            </div>
 
         </div>
