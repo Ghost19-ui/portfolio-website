@@ -14,7 +14,7 @@ export default function AdminLogin() {
   const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // Redirect if user state is already valid
   useEffect(() => {
     if (user) {
       navigate('/admin/dashboard');
@@ -26,8 +26,8 @@ export default function AdminLogin() {
   };
 
   const togglePassword = (e) => {
-    e.preventDefault(); // Stop form submission triggers
-    e.stopPropagation(); // Stop event bubbling
+    e.preventDefault();
+    e.stopPropagation();
     setShowPassword(!showPassword);
   };
 
@@ -38,9 +38,13 @@ export default function AdminLogin() {
 
     try {
       const { data } = await API.post('/auth/login', formData);
+      
+      // 1. Save Token
       login(data.token);
-      localStorage.setItem('token', data.token);
-      window.location.href = '/admin/dashboard';
+      
+      // 2. Navigate smoothly (AuthContext now handles the state instantly)
+      navigate('/admin/dashboard');
+      
     } catch (err) {
       console.error("Login Failed:", err);
       setError('ACCESS DENIED: Invalid Security Credentials');
@@ -77,9 +81,7 @@ export default function AdminLogin() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">
-                Operator ID
-              </label>
+              <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">Operator ID</label>
               <div className="relative group">
                 <input
                   type="email"
@@ -95,9 +97,7 @@ export default function AdminLogin() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">
-                Security Token
-              </label>
+              <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">Security Token</label>
               <div className="relative group">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -109,13 +109,11 @@ export default function AdminLogin() {
                   placeholder="••••••••"
                 />
                 <Lock className="absolute left-3 top-3 text-red-700 w-4 h-4 group-focus-within:text-red-500 transition-colors" />
-                
-                {/* FIXED EYE BUTTON: Added z-10 and cursor-pointer */}
                 <button
                   type="button"
                   onClick={togglePassword}
                   className="absolute right-3 top-3 text-red-700 hover:text-red-400 transition-colors z-10 cursor-pointer"
-                  tabIndex="-1" // Prevents tab skipping to this button instead of submit
+                  tabIndex="-1"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -127,13 +125,8 @@ export default function AdminLogin() {
               disabled={loading}
               className="w-full bg-red-600 hover:bg-white hover:text-red-900 text-black font-bold py-4 uppercase tracking-[0.2em] transition-all clip-path-polygon flex items-center justify-center gap-2 mt-4 group"
             >
-              {loading ? (
-                <span className="animate-pulse">Handshaking...</span>
-              ) : (
-                <>
-                  Establish Uplink <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
+              {loading ? <span className="animate-pulse">Handshaking...</span> : 
+              <>Establish Uplink <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" /></>}
             </button>
           </form>
         </HoloCard>

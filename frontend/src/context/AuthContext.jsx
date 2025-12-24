@@ -1,10 +1,8 @@
-import React, { createContext, useState, useEffect, useContext } from 'react'; // Added useContext
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import API from '../api/axiosConfig';
 
 export const AuthContext = createContext();
 
-// --- THIS WAS MISSING ---
-// This allows other files to say "import { useAuth } from ..."
 export const useAuth = () => {
   return useContext(AuthContext);
 };
@@ -13,38 +11,50 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if user is logged in when the app starts
   useEffect(() => {
-    const checkUserLoggedIn = async () => {
-      // Check localStorage for the key
+    const initAuth = async () => {
+      // 1. Check LocalStorage for the key
       const token = localStorage.getItem('token'); 
       
       if (token) {
+        // OPTIMISTIC UPDATE:
+        // Assume valid if token exists so we don't flash the login page.
+        setUser({ token }); 
+
         try {
-          // Verify the token is valid with the backend
+          // 2. Verify with Backend
           const { data } = await API.get('/auth/me');
-          setUser(data.data);
+          
+          // robust check: handles {data: user} or {user: ...} or just { ... }
+          const userData = data.data || data.user || data;
+          setUser(userData);
+          
         } catch (error) {
-          console.error("Session expired or invalid:", error);
-          localStorage.removeItem('token'); // Clear bad token
-          setUser(null);
+          console.error("Auth check warning:", error);
+          
+          // CRITICAL FIX: Only logout if explicitly Unauthorized (401)
+          // If it's a 404 or Network Error, we STAY logged in to avoid loops.
+          if (error.response && error.response.status === 401) {
+            localStorage.removeItem('token');
+            setUser(null);
+          }
         }
       }
       setLoading(false);
     };
 
-    checkUserLoggedIn();
+    initAuth();
   }, []);
 
   const login = (token) => {
-    localStorage.setItem('token', token); // Save to LocalStorage
-    setUser({ token }); // Optimistically set user
+    localStorage.setItem('token', token);
+    setUser({ token }); // Immediate update
   };
 
   const logout = () => {
-    localStorage.removeItem('token'); // Clear from LocalStorage
+    localStorage.removeItem('token');
     setUser(null);
-    window.location.href = '/admin/login'; // Force redirect
+    window.location.href = '/admin/login';
   };
 
   return (
