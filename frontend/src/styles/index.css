@@ -1,102 +1,37 @@
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Global Base Styles */
-@layer base {
-  body {
-    @apply bg-slate-950 text-slate-200 font-sans antialiased;
-    /* User's original subtle gradient background - serves as a fallback or base layer */
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15), transparent 50%),
-      radial-gradient(circle at 100% 0%, rgba(16, 185, 129, 0.1), transparent 50%);
-    background-attachment: fixed;
-  }
-
-  /* Make headings feel "techy" */
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight text-white;
-  }
+/* Apply the Tactical Font Globally */
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background-color: #000000;
+  color: #e2e8f0;
+  overflow-x: hidden;
 }
 
-/* Custom "Glass" Utilities */
-@layer components {
-  .glass-panel {
-    @apply bg-slate-900/50 backdrop-blur-md border border-slate-800 shadow-xl;
-  }
-  
-  .nav-link {
-    @apply relative text-sm font-medium text-slate-400 hover:text-blue-400 transition-colors duration-200;
-  }
-  
-  .nav-link::after {
-    content: '';
-    @apply absolute left-0 -bottom-1 w-0 h-0.5 bg-blue-500 transition-all duration-300;
-  }
-  
-  .nav-link:hover::after {
-    @apply w-full;
-  }
+/* Custom Scrollbar for the Hacker Vibe */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a1a1a;
+  border-radius: 4px;
+  border: 1px solid #333;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #dc2626; /* Red on hover */
 }
 
-/* --- 3D Cyber Grid Animation Styles --- */
-/* This is independent of Tailwind layers to ensure it always loads */
-
-.cyber-grid-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: -1; /* Sits behind your content */
-  background-color: #020617; /* Matches slate-950 base */
-  perspective: 1000px; /* Essential for the 3D tilt effect */
+/* Utility to hide scrollbar but keep functionality if needed */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-.cyber-grid {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  /* The Grid Pattern */
-  background-image:
-    linear-gradient(rgba(6, 182, 212, 0.15) 1px, transparent 1px), /* Cyan lines, low opacity */
-    linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px);
-  background-size: 50px 50px; /* Grid square size */
-  
-  /* 3D Transform */
-  transform: rotateX(60deg); 
-  
-  /* Animation */
-  animation: moveGrid 6s linear infinite;
-  
-  /* Fade out edges so it blends into the black void */
-  mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
-  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
-}
-
-/* The Movement Animation */
-@keyframes moveGrid {
-  0% {
-    transform: rotateX(60deg) translateY(0);
-  }
-  100% {
-    transform: rotateX(60deg) translateY(50px); /* Must match background-size (50px) for seamless loop */
-  }
-}
-
-/* --- New Glassmorphism Card (Stronger than glass-panel) --- */
-.glass-card {
-  background: rgba(15, 23, 42, 0.6); /* Slate-900 with transparency */
-  backdrop-filter: blur(16px); /* Strong blur */
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 
-    0 4px 30px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.05) inset; /* Inner glow border */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
