@@ -37,13 +37,11 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             
             {/* Admin Authentication Routes */}
-            {/* We add both paths to ensure the logout redirect works safely */}
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/admin/login" element={<AdminLogin />} />
 
             {/* Protected Dashboard Route */}
             <Route element={<ProtectedRoute />}>
-              {/* No nested routes needed here anymore because AdminDashboard uses Tabs */}
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Route>
           </Routes>
