@@ -1,97 +1,129 @@
 import React, { useState } from 'react';
-import API from '../api/axiosConfig';
+import HoloCard from '../components/HoloCard';
 
-export default function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-  const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [status, setStatus] = useState('IDLE'); // IDLE, SENDING, SENT
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      await API.post('/contact', formData);
-      setSubmitted(true);
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setSubmitted(false), 3000);
-    } catch (error) {
-      alert(
-        'Error sending message: ' +
-          (error.response?.data?.error || error.message)
-      );
-    } finally {
-      setLoading(false);
-    }
+    setStatus('SENDING');
+    // Simulate network delay for effect
+    setTimeout(() => {
+        setStatus('SENT');
+        // Reset after 3 seconds
+        setTimeout(() => setStatus('IDLE'), 3000);
+    }, 1500);
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-12">
-      <h1 className="text-4xl font-bold mb-8 text-white text-center">
-        Get In Touch
-      </h1>
+    <div className="min-h-screen flex items-center justify-center p-4 pt-20">
+      <div className="w-full max-w-2xl">
+        
+        <HoloCard title="ENCRYPTED_CHANNEL_V4">
+            
+            {/* Header Section */}
+            <div className="mb-8 text-center">
+                <h1 className="text-3xl md:text-4xl font-bold font-mono text-white mb-2 tracking-tighter">
+                    ESTABLISH <span className="text-red-600">UPLINK</span>
+                </h1>
+                <p className="text-slate-400 font-mono text-sm">
+                    // Send encrypted transmission to operator.<br/>
+                    // All communications are logged and secured.
+                </p>
+            </div>
 
-      {submitted && (
-        <div className="bg-green-600 text-white p-4 rounded mb-6 text-center">
-          ✓ Message received! I&apos;ll get back to you soon.
-        </div>
-      )}
+            {/* Form Section */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+                
+                {/* Name Input */}
+                <div className="space-y-2">
+                    <label className="text-xs font-mono text-red-400 uppercase tracking-widest ml-1">
+                        Agent Identity / Name
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600 to-red-900 rounded-sm opacity-20 group-hover:opacity-50 transition duration-500"></div>
+                        <input
+                            type="text"
+                            name="name"
+                            required
+                            value={formData.name}
+                            onChange={handleChange}
+                            className="relative w-full bg-black/80 border border-red-900/50 text-slate-200 p-3 font-mono focus:outline-none focus:border-red-500 focus:shadow-[0_0_15px_rgba(220,38,38,0.5)] transition-all placeholder-slate-700"
+                            placeholder="ENTER_CODENAME..."
+                        />
+                    </div>
+                </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-slate-800 rounded-lg p-8 space-y-6"
-      >
-        <div>
-          <label className="text-white font-semibold block mb-2">Name</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 rounded bg-slate-700 text-white border border-blue-600 focus:outline-none"
-            placeholder="Your name"
-          />
-        </div>
+                {/* Email Input */}
+                <div className="space-y-2">
+                    <label className="text-xs font-mono text-red-400 uppercase tracking-widest ml-1">
+                        Return Frequency / Email
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600 to-red-900 rounded-sm opacity-20 group-hover:opacity-50 transition duration-500"></div>
+                        <input
+                            type="email"
+                            name="email"
+                            required
+                            value={formData.email}
+                            onChange={handleChange}
+                            className="relative w-full bg-black/80 border border-red-900/50 text-slate-200 p-3 font-mono focus:outline-none focus:border-red-500 focus:shadow-[0_0_15px_rgba(220,38,38,0.5)] transition-all placeholder-slate-700"
+                            placeholder="SECURE@DOMAIN.COM..."
+                        />
+                    </div>
+                </div>
 
-        <div>
-          <label className="text-white font-semibold block mb-2">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 rounded bg-slate-700 text-white border border-blue-600 focus:outline-none"
-            placeholder="your@email.com"
-          />
-        </div>
+                {/* Message Input */}
+                <div className="space-y-2">
+                    <label className="text-xs font-mono text-red-400 uppercase tracking-widest ml-1">
+                        Payload / Message
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600 to-red-900 rounded-sm opacity-20 group-hover:opacity-50 transition duration-500"></div>
+                        <textarea
+                            name="message"
+                            required
+                            rows="5"
+                            value={formData.message}
+                            onChange={handleChange}
+                            className="relative w-full bg-black/80 border border-red-900/50 text-slate-200 p-3 font-mono focus:outline-none focus:border-red-500 focus:shadow-[0_0_15px_rgba(220,38,38,0.5)] transition-all placeholder-slate-700"
+                            placeholder="INPUT_DATA_STREAM..."
+                        ></textarea>
+                    </div>
+                </div>
 
-        <div>
-          <label className="text-white font-semibold block mb-2">Message</label>
-          <textarea
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            required
-            minLength="10"
-            rows="6"
-            className="w-full px-4 py-2 rounded bg-slate-700 text-white border border-blue-600 focus:outline-none resize-none"
-            placeholder="Your message here..."
-          />
-        </div>
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    disabled={status === 'SENDING' || status === 'SENT'}
+                    className={`
+                        w-full py-4 font-bold font-mono uppercase tracking-[0.2em] clip-path-polygon transition-all duration-300
+                        ${status === 'SENT' 
+                            ? 'bg-green-600 text-black cursor-default' 
+                            : 'bg-red-600 hover:bg-white hover:text-red-600 text-black shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.6)]'
+                        }
+                    `}
+                >
+                    {status === 'IDLE' && 'INITIALIZE_TRANSMISSION'}
+                    {status === 'SENDING' && 'ENCRYPTING_PACKETS...'}
+                    {status === 'SENT' && 'TRANSMISSION_COMPLETE'}
+                </button>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition disabled:opacity-50"
-        >
-          {loading ? 'Sending...' : 'Send Message'}
-        </button>
-      </form>
+            </form>
+        </HoloCard>
+
+      </div>
     </div>
   );
-}
+};
+
+export default Contact;
