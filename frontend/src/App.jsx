@@ -6,10 +6,8 @@ import { AuthProvider } from './context/AuthContext';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// --- CHANGE THIS IMPORT ---
-// import CyberGlobe from './components/CyberGlobe'; // Old wireframe globe
-import AttackGlobe from './components/AttackGlobe'; // New interactive attack map
-// --------------------------
+// Background
+import AttackGlobe from './components/AttackGlobe'; 
 
 // Styles
 import './styles/index.css'; 
@@ -32,13 +30,20 @@ function App() {
         {/* 2. THE LAYOUT & CONTENT */}
         <Layout>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
             
+            {/* Admin Authentication Routes */}
+            {/* We add both paths to ensure the logout redirect works safely */}
             <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+
+            {/* Protected Dashboard Route */}
             <Route element={<ProtectedRoute />}>
+              {/* No nested routes needed here anymore because AdminDashboard uses Tabs */}
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Route>
           </Routes>

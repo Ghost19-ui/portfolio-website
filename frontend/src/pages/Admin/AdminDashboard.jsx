@@ -2,8 +2,11 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import API from '../../api/axiosConfig';
-import { LogOut, Plus, Trash2, Terminal, Cpu, FileText, X, Loader2, RefreshCw } from 'lucide-react';
-import CyberGlobe from '../../components/CyberGlobe'; // ADD THIS
+import { 
+  LogOut, Plus, Trash2, Terminal, Cpu, FileText, X, 
+  Loader2, RefreshCw, MessageSquare, Shield 
+} from 'lucide-react';
+import CyberGlobe from '../../components/CyberGlobe';
 
 export default function AdminDashboard() {
   const { user, logout } = useContext(AuthContext);
@@ -16,6 +19,8 @@ export default function AdminDashboard() {
   const [projects, setProjects] = useState([]);
   const [skills, setSkills] = useState([]);
   const [blogs, setBlogs] = useState([]);
+  const [messages, setMessages] = useState([]); 
+  const [logs, setLogs] = useState([]); 
 
   // Form States
   const [newProject, setNewProject] = useState({ title: '', description: '', image: '', githubLink: '', technologies: '' });
@@ -24,7 +29,7 @@ export default function AdminDashboard() {
 
   // --- HELPER: Get Auth Headers Manually ---
   const getAuthConfig = () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
     return {
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -36,11 +41,10 @@ export default function AdminDashboard() {
   // Fetch Logic
   const fetchData = async () => {
     setLoading(true);
-    const config = getAuthConfig(); // Get token
+    const config = getAuthConfig();
 
     try {
       if (activeTab === 'projects') {
-        // Pass config as 2nd argument for GET
         const { data } = await API.get('/projects', config);
         setProjects(Array.isArray(data) ? data : []);
       } else if (activeTab === 'skills') {
@@ -49,6 +53,12 @@ export default function AdminDashboard() {
       } else if (activeTab === 'blogs') {
         const { data } = await API.get('/content/blogs', config);
         setBlogs(Array.isArray(data) ? data : []);
+      } else if (activeTab === 'messages') {
+        const { data } = await API.get('/admin/messages', config);
+        setMessages(Array.isArray(data) ? data : []);
+      } else if (activeTab === 'logs') {
+        const { data } = await API.get('/admin/logs', config);
+        setLogs(Array.isArray(data) ? data : []);
       }
     } catch (e) { 
         console.error("Fetch Error:", e); 
@@ -62,12 +72,11 @@ export default function AdminDashboard() {
   // Create Handler
   const handleCreate = async (e) => {
     e.preventDefault();
-    const config = getAuthConfig(); // Get token
+    const config = getAuthConfig();
 
     try {
       if (activeTab === 'projects') {
         const tech = newProject.technologies.split(',').map(t => t.trim());
-        // Pass config as 3rd argument for POST
         await API.post('/projects', { ...newProject, technologies: tech }, config);
       } else if (activeTab === 'skills') {
         await API.post('/content/skills', newSkill, config);
@@ -80,14 +89,14 @@ export default function AdminDashboard() {
       alert("Deployed successfully!");
     } catch (error) { 
         console.error("Create Error:", error);
-        alert("Operation failed. Check console."); 
+        alert("Operation failed."); 
     }
   };
 
   // Delete Handler
   const handleDelete = async (id, type, subId = null) => {
     if (!window.confirm("Confirm deletion?")) return;
-    const config = getAuthConfig(); // Get token
+    const config = getAuthConfig();
 
     try {
       let endpoint = '';
@@ -96,22 +105,20 @@ export default function AdminDashboard() {
       if (type === 'skillItem') endpoint = `/content/skills/${id}/${subId}`;
       if (type === 'blog') endpoint = `/content/blogs/${id}`;
       
-      // Pass config as 2nd argument for DELETE
+      // ADDED: Delete logic for messages
+      if (type === 'message') endpoint = `/admin/messages/${id}`;
+      
       await API.delete(endpoint, config);
       fetchData();
     } catch (e) { 
         console.error("Delete Error:", e);
-        alert("Delete failed"); 
     }
   };
 
   return (
     <div className="min-h-screen bg-black text-white font-mono relative">
+      <CyberGlobe />
       
-      {/* 1. Background Component */}
-<CyberGlobe />  {/* ADD THIS */}
-      
-      {/* 2. Content Layer */}
       <div className="relative z-50 max-w-7xl mx-auto p-6 pt-24">
         
         {/* Header */}
@@ -122,25 +129,27 @@ export default function AdminDashboard() {
              </div>
              <div>
                <h1 className="text-2xl font-bold tracking-widest text-white uppercase">Command Center</h1>
-               <p className="text-xs text-red-500 uppercase tracking-widest mt-1">:: Authenticated as {user?.name || 'Admin'} ::</p>
+               <p className="text-xs text-red-500 uppercase tracking-widest mt-1">:: Authenticated Operator ::</p>
              </div>
           </div>
           <div className="flex gap-3">
-            <button onClick={fetchData} className="flex items-center gap-2 bg-gray-900 border border-gray-700 px-4 py-2 rounded text-gray-300 hover:text-white hover:border-white transition-all text-xs font-bold">
+            <button onClick={fetchData} className="flex items-center gap-2 bg-gray-900 border border-gray-700 px-4 py-2 rounded text-gray-300 hover:text-white transition-all text-xs font-bold">
               <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> REFRESH
             </button>
-            <button onClick={() => { logout(); navigate('/admin'); }} className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-black px-6 py-2 rounded font-bold text-xs uppercase tracking-wider transition-all">
-              <LogOut size={14} /> Abort Session
+            <button onClick={() => { logout(); navigate('/admin/login'); }} className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-black px-6 py-2 rounded font-bold text-xs uppercase transition-all">
+              <LogOut size={14} /> Terminate Session
             </button>
           </div>
         </div>
 
-        {/* Tabs */}
+        {/* Updated Tabs */}
         <div className="flex flex-wrap gap-3 mb-8 border-b border-gray-800 pb-6">
           {[
             { id: 'projects', label: 'PAYLOADS', icon: <Terminal size={14} /> },
             { id: 'skills', label: 'CAPABILITIES', icon: <Cpu size={14} /> },
-            { id: 'blogs', label: 'INTEL REPORTS', icon: <FileText size={14} /> }
+            { id: 'blogs', label: 'INTEL REPORTS', icon: <FileText size={14} /> },
+            { id: 'messages', label: 'TRANSMISSIONS', icon: <MessageSquare size={14} /> },
+            { id: 'logs', label: 'SYSTEM_LOGS', icon: <Shield size={14} /> }
           ].map(tab => (
             <button 
               key={tab.id} 
@@ -156,10 +165,12 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Add Button */}
-        <button onClick={() => setShowModal(true)} className="w-full mb-10 py-5 border border-dashed border-red-900/50 hover:border-red-500 text-red-700 hover:text-red-400 rounded-xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest transition-all bg-red-950/5 hover:bg-red-950/10">
-          <Plus size={20} /> Initialize New {activeTab.slice(0, -1)} Entry
-        </button>
+        {/* Conditional Add Button */}
+        {!['logs', 'messages'].includes(activeTab) && (
+          <button onClick={() => setShowModal(true)} className="w-full mb-10 py-5 border border-dashed border-red-900/50 hover:border-red-500 text-red-700 hover:text-red-400 rounded-xl flex items-center justify-center gap-3 font-bold uppercase tracking-widest transition-all bg-red-950/5 hover:bg-red-950/10">
+            <Plus size={20} /> Initialize New {activeTab.slice(0, -1)} Entry
+          </button>
+        )}
 
         {/* Content Views */}
         {loading ? (
@@ -169,32 +180,66 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <>
-            {/* EMPTY STATE */}
-            {((activeTab === 'projects' && projects.length === 0) || 
-              (activeTab === 'skills' && skills.length === 0) || 
-              (activeTab === 'blogs' && blogs.length === 0)) && (
-                <div className="text-center py-20 border border-gray-800 rounded-lg bg-gray-900/50">
-                  <p className="text-gray-500 font-mono">No data found in this sector. Add an entry to begin.</p>
-                </div>
-            )}
-
             {/* PROJECTS */}
             {activeTab === 'projects' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {projects.map(p => (
-                  <div key={p._id} className="bg-black/90 border border-gray-800 p-6 rounded-xl hover:border-red-600 transition-all group relative">
-                    <h3 className="font-bold text-lg text-white mb-2 group-hover:text-red-500 transition-colors">{p.title}</h3>
-                    <p className="text-xs text-gray-500 mb-4 font-sans line-clamp-2">{p.description}</p>
-                    <div className="flex justify-between mt-auto pt-4 border-t border-gray-900 items-center">
-                      <span className="text-[10px] text-gray-600 font-mono uppercase">ID: {p._id.slice(-6)}</span>
-                      <button onClick={() => handleDelete(p._id, 'project')} className="text-gray-600 hover:text-red-500 transition-colors p-2 hover:bg-red-950/30 rounded"><Trash2 size={16}/></button>
-                    </div>
+                  <div key={p._id} className="bg-black/90 border border-gray-800 p-6 rounded-xl hover:border-red-600 transition-all group">
+                    <h3 className="font-bold text-lg text-white mb-2 group-hover:text-red-500">{p.title}</h3>
+                    <p className="text-xs text-gray-500 mb-4 line-clamp-2">{p.description}</p>
+                    <button onClick={() => handleDelete(p._id, 'project')} className="text-gray-600 hover:text-red-500"><Trash2 size={16}/></button>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* SKILLS */}
+            {/* MESSAGES VIEW */}
+            {activeTab === 'messages' && (
+              <div className="space-y-4">
+                {messages.length === 0 ? <p className="text-center text-gray-600">No transmissions intercepted.</p> : 
+                messages.map(m => (
+                  <div key={m._id} className="bg-black/80 border border-zinc-800 p-6 rounded-lg border-l-4 border-l-red-600 hover:bg-zinc-900 transition-colors group relative">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h4 className="text-red-500 font-bold text-sm uppercase tracking-tighter">{m.name}</h4>
+                        <p className="text-[10px] text-zinc-500">{m.email}</p>
+                      </div>
+                      <span className="text-[10px] text-zinc-600 uppercase">{new Date(m.createdAt).toLocaleString()}</span>
+                    </div>
+                    <p className="text-gray-300 text-sm italic">"{m.content}"</p>
+                    
+                    {/* Delete Button for Messages */}
+                    <button 
+                      onClick={() => handleDelete(m._id, 'message')}
+                      className="absolute top-4 right-4 text-zinc-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* LOGS VIEW */}
+            {activeTab === 'logs' && (
+              <div className="bg-black/80 border border-red-900/30 p-4 rounded-lg font-mono text-xs h-[600px] overflow-y-auto">
+                <div className="text-red-500 mb-2 font-bold uppercase tracking-widest border-b border-red-900/50 pb-2 flex justify-between">
+                  <span>&gt; System_Log_Stream</span>
+                  <span className="animate-pulse">Live</span>
+                </div>
+                {logs.map((log, i) => (
+                  <div key={i} className="flex gap-3 py-1 border-b border-zinc-900 hover:bg-red-950/10 transition-colors">
+                    <span className="text-zinc-600">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
+                    <span className={log.level === 'ERROR' ? 'text-red-600' : 'text-green-600'}>{log.level}</span>
+                    <span className="text-red-400 font-bold">{log.event}:</span>
+                    <span className="text-zinc-400">{log.details}</span>
+                  </div>
+                ))}
+                <div className="text-red-500 animate-pulse mt-2">_</div>
+              </div>
+            )}
+
+            {/* SKILLS VIEW */}
             {activeTab === 'skills' && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {skills.map(group => (
@@ -219,7 +264,7 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* BLOGS */}
+            {/* BLOGS VIEW */}
             {activeTab === 'blogs' && (
               <div className="space-y-4">
                 {blogs.map(b => (
