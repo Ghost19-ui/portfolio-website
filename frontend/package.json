@@ -9,6 +9,7 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@react-three/drei": "9.103.0",
     "@react-three/fiber": "8.15.16",
     "axios": "^1.7.0",
