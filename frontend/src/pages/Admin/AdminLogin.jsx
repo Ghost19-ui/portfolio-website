@@ -2,11 +2,12 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import API from '../../api/axiosConfig';
-import { Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, Shield } from 'lucide-react';
+import { Shield, Lock, ChevronRight, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import HoloCard from '../../components/HoloCard'; // Reusing your 3D Card
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [showPassword, setShowPassword] = useState(false); // Controls the Eye button
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -30,104 +31,116 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      console.log("Attempting login with:", formData.email); // Debugging log
-      
-      // 1. Send Login Request
       const { data } = await API.post('/auth/login', formData);
       
-      // 2. Store Token
-      console.log("Login successful, token received.");
+      // 1. Save Token
       login(data.token);
-      
-      // 3. Redirect
-      navigate('/admin/dashboard');
+      localStorage.setItem('token', data.token);
+
+      // 2. FORCE RELOAD to ensure Dashboard access
+      window.location.href = '/admin/dashboard';
       
     } catch (err) {
       console.error("Login Failed:", err);
-      // Detailed error message for debugging
-      const errorMessage = err.response?.data?.error || err.message || 'Connection to server failed.';
-      setError(errorMessage);
+      setError('ACCESS DENIED: Invalid Security Credentials');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden font-mono">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-zinc-900/50 via-black to-black"></div>
-      
-      <div className="w-full max-w-md bg-zinc-950 border border-zinc-800 p-8 rounded-2xl shadow-2xl relative z-10">
-        
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex p-3 bg-white/5 rounded-full mb-4 border border-white/10">
-            <Shield className="w-8 h-8 text-white" />
-          </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Welcome Back</h2>
-          <p className="text-zinc-500 text-sm mt-2">Enter your credentials to access the terminal.</p>
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3 text-red-400 text-sm">
-            <AlertCircle className="w-5 h-5 shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email Input */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Email Address</label>
-            <div className="relative group">
-              <input
-                type="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full bg-black border border-zinc-800 text-white px-11 py-3.5 rounded-lg focus:outline-none focus:border-white/40 transition-all placeholder:text-zinc-700"
-                placeholder="name@example.com"
-              />
-              <Mail className="absolute left-3.5 top-3.5 text-zinc-500 w-5 h-5 group-focus-within:text-white transition-colors" />
+    <div className="min-h-screen flex items-center justify-center p-4 pt-20">
+      <div className="w-full max-w-lg">
+        <HoloCard title="IDENTITY_VERIFICATION_V2">
+          
+          {/* Header Section */}
+          <div className="text-center mb-8 border-b border-red-900/30 pb-6">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 bg-red-950/20 rounded-full border border-red-600/50 shadow-[0_0_15px_rgba(220,38,38,0.5)]">
+                <Shield className="w-10 h-10 text-red-500" />
+              </div>
             </div>
+            <h1 className="text-2xl font-bold font-mono text-white tracking-widest uppercase mb-1">
+              Restricted <span className="text-red-600">Access</span>
+            </h1>
+            <p className="text-xs text-red-400 font-mono tracking-[0.2em] opacity-80">
+              // AUTHORIZED PERSONNEL ONLY //
+            </p>
           </div>
 
-          {/* Password Input with Eye Button */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">Password</label>
-            <div className="relative group">
-              <input
-                type={showPassword ? "text" : "password"} // Toggles between text and password
-                name="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full bg-black border border-zinc-800 text-white px-11 py-3.5 rounded-lg focus:outline-none focus:border-white/40 transition-all placeholder:text-zinc-700"
-                placeholder="••••••••••••"
-              />
-              <Lock className="absolute left-3.5 top-3.5 text-zinc-500 w-5 h-5 group-focus-within:text-white transition-colors" />
-              
-              {/* THE EYE BUTTON */}
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-3.5 text-zinc-500 hover:text-white transition-colors focus:outline-none"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+          {/* Error Display */}
+          {error && (
+            <div className="mb-6 bg-red-950/40 border-l-4 border-red-600 text-red-200 p-3 font-mono text-xs flex items-center gap-3 animate-pulse">
+              <AlertTriangle size={14} />
+              {error}
             </div>
-          </div>
+          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-white text-black font-bold py-3.5 rounded-lg hover:bg-zinc-200 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
-          >
-            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
-          </button>
-        </form>
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">
+                Operator ID
+              </label>
+              <div className="relative group">
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full bg-black/80 border border-red-900/50 text-white p-3 pl-10 rounded outline-none focus:border-red-500 transition-all font-mono text-sm shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
+                  placeholder="admin@system.io"
+                />
+                <Shield className="absolute left-3 top-3 text-red-700 w-4 h-4 group-focus-within:text-red-500 transition-colors" />
+              </div>
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-2">
+              <label className="text-[10px] text-red-500 uppercase tracking-widest font-bold font-mono">
+                Security Token
+              </label>
+              <div className="relative group">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full bg-black/80 border border-red-900/50 text-white p-3 pl-10 pr-10 rounded outline-none focus:border-red-500 transition-all font-mono text-sm shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]"
+                  placeholder="••••••••"
+                />
+                <Lock className="absolute left-3 top-3 text-red-700 w-4 h-4 group-focus-within:text-red-500 transition-colors" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-red-700 hover:text-red-400 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-red-600 hover:bg-white hover:text-red-900 text-black font-bold py-4 uppercase tracking-[0.2em] transition-all clip-path-polygon flex items-center justify-center gap-2 mt-4 group"
+            >
+              {loading ? (
+                <span className="animate-pulse">Handshaking...</span>
+              ) : (
+                <>
+                  Establish Uplink <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
+
+          </form>
+        </HoloCard>
       </div>
     </div>
   );
